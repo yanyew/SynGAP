@@ -46,7 +46,7 @@ In the _results_ directory, there are several key output files:
 | *.SynGAP.clean.gff3 | the polished genome annotation file (only polished) |
 | *.SynGAP.clean.miss_annotated.gff3 | only the polished annotations that are miss-annotated in the originnal genome annotation |
 | *.SynGAP.clean.mis_annotated.gff3 | only the polished annotations that are mis-annotated in the originnal genome annotation |
-| *.*.anchors.gap | the _gaps_ where mis-annotation or miss-annotation of gene models (MAGs) may exist |
+| *.anchors.gap | the _gaps_ where mis-annotation or miss-annotation of gene models (MAGs) may exist |
 
 <a name="e04Hz"></a>
 ### _triple_
@@ -95,9 +95,9 @@ SynGAP _genepair_ will generate several key output files (see below), and _*.*.f
 
 | **Result File** | **Description** |
 | --- | --- |
-| *.*.final.genepair | the full gene pairs file (syntenic + best two-way BLAST) |
-| *.*.Synteny.genepair | the syntenic gene pairs |
-| *.*.2wayblast.genepair | the best two-way BLAST gene pairs |
+| *.final.genepair | the full gene pairs file (syntenic + best two-way BLAST) |
+| *.Synteny.genepair | the syntenic gene pairs |
+| *.2wayblast.genepair | the best two-way BLAST gene pairs |
 
 <a name="QTnjs"></a>
 ### _evi_
@@ -112,11 +112,11 @@ There are several key output files:
 
 | **Result File** | **Description** |
 | --- | --- |
-| *.*.final.genepair.EVI.xls | the final EVI result file, in which the gene pairs are ranked by _EVI_ |
-| *.*.final.genepair.EVI.threshold.txt | the threshold of _EVI_. The gene pairs with _EVI_ exceeding the threshold were considered to show marked differential expression signals |
-| *.*.final.genepair.EVI.pdf | the ranked dotplot of _EVI_ for all gene pairs |
-| *.*.final.genepair.EVI.indexweight.pdf | the stacked barplot of the three indexes contributing to _EVI_, which can help to adjust the weight of three indexes |
-| *.*.final.genepair.EVI.indexweightratio.pdf | the percentage stacked barplot of the three indexes contributing to _EVI_, which can help to adjust the weight of three indexes |
+| *.final.genepair.EVI.xls | the final EVI result file, in which the gene pairs are ranked by _EVI_ |
+| *.final.genepair.EVI.threshold.txt | the threshold of _EVI_. The gene pairs with _EVI_ exceeding the threshold were considered to show marked differential expression signals |
+| *.final.genepair.EVI.pdf | the ranked dotplot of _EVI_ for all gene pairs |
+| *.final.genepair.EVI.indexweight.pdf | the stacked barplot of the three indexes contributing to _EVI_, which can help to adjust the weight of three indexes |
+| *.final.genepair.EVI.indexweightratio.pdf | the percentage stacked barplot of the three indexes contributing to _EVI_, which can help to adjust the weight of three indexes |
 
 <a name="th0OD"></a>
 ### _eviplot_
