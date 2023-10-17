@@ -11,7 +11,7 @@ Find source codes and documentation at [https://github.com/yanyew/SynGAP](https:
 <a name="YLr3p"></a>
 ## conda (recommended)
 ```
-conda install syngap
+conda install -c kotobaw syngap
 ```
 <a name="lP3Sh"></a>
 ## manually
