@@ -1,0 +1,265 @@
+.TH miniprot 1 "17 October 2022" "miniprot-0.5 (r179)" "Bioinformatics tools"
+.SH NAME
+.PP
+miniprot - protein-to-genome alignment with splicing and frameshifts
+.SH SYNOPSIS
+* Indexing a genome (recommended as indexing can be slow and memory hungry):
+.RS 4
+miniprot
+.RB [ -t
+.IR nThreads ]
+.B -d
+.I ref.mpi
+.I ref.fna
+.RE
+
+* Aligning proteins to a genome:
+.RS 4
+miniprot 
+.RB [ -t
+.IR nThreads ]
+.I ref.mpi
+.I protein.faa
+>
+.I output.paf
+.br
+miniprot 
+.RB [ -t
+.IR nThreads ]
+.I ref.fna
+.I protein.faa
+>
+.I output.paf
+.RE
+.SH DESCRIPTION
+Miniprot aligns protein sequences to a genome allowing potential frameshifts and splicing.
+.SH OPTIONS
+.SS Indexing options
+.TP 10
+.BI -k \ INT
+K-mer size for genome-wide indexing [6]
+.TP
+.BI -s \ INT
+Syncmer submer size [4]. In average, miniprot selects a k-mer every 2*(k-s)+1 residues.
+.TP
+.BI -b \ INT
+Number of bits per bin [8]. Miniprot splits the genome into non-overlapping bins of 2^8 bp in size.
+.TP
+.BI -d \ FILE
+Write the index to
+.I FILE
+[].
+.SS Chaining options
+.TP 10
+.B -S
+Disable splicing. It applies
+.RB ` -G1k
+.B -J1k
+.BR -e1k '
+at the same time.
+.TP
+.BI -c \ NUM
+Ignore k-mers occurring
+.I NUM
+times or more [50k]
+.TP
+.BI -G \ NUM
+Max intron size [200k]
+.TP
+.BI -n \ NUM
+Min number of syncmers in a chain [10]
+.TP
+.BI -m \ NUM
+Min chaining score [0]
+.TP
+.BI -l \ INT
+K-mer size for the second round of chaining [5]
+.TP
+.BI -e \ NUM
+Max extension from chain ends for alignment or the second round of chaining [10k]
+.TP
+.BI -p \ FLOAT
+Filter out a secondary chain/alignment if its score is
+.I FLOAT
+fraction of the best chain [0.5]
+.TP
+.BI -N \ NUM
+Retain at most
+.I NUM
+number of secondary chains/alignments [30]
+.SS Alignment options
+.TP 10
+.BI -O \ INT
+Gap open penalty [11]
+.TP
+.BI -E \ INT
+Gap extension penalty [1]. A gap of size
+.B g
+costs 
+.RB { -O }+{ -E }* g .
+.TP
+.BI -J \ INT
+Intron open penalty [29]
+.TP
+.BI -F \ INT
+Penalty for frameshifts or in-frame stop codons [23]
+.TP
+.BI -C \ FLOAT
+Weight of splicing penalty [1]. Set to 0 to ignore splicing signals.
+.TP
+.BI -B \ IN
+Bonus score for alignment reaching ends of proteins [5]
+.TP
+.BI -j \ INT
+Splice model for the target genome: 2=mammal, 1=general, 0=none [1]. The mammal
+model considers `G|GTR...YYYNYAG|' as the optimal splicing sequence and
+penalizes other sequences based on profiles in Sibley et al (2016). According
+to Irimia and Roy (2008) and Sheth et al (2006), the first `G' in the donor
+exon and the poly-Y close to the acceptor may not be conserved in some species.
+The general model takes `|GTR...YAG|' as the optimal sequence. Both models also
+consider less frequent splice sites including `G|GC...YAG|' and `|AT...AC|'.
+.SS Input/Output options
+.TP 10
+.BI -t \ INT
+Number of threads [4]
+.TP
+.B --gff
+Output in the GFF3 format. `##PAF' lines in the output provide detailed
+alignments.
+.TP
+.B --gff-only
+Output in the GFF3 format without `##PAF' lines.
+.TP
+.BI -P \ STR
+Prefix for IDs in GFF3 [MP].
+.B --gff-delim
+overrides this option.
+.TP
+.BI --gff-delim \ CHAR
+Change the ID field in GFF3 to
+.RI QueryName CHAR HitIndex
+[]. If not specified, the default ID looks like `MP000012'.
+.TP
+.B -u
+Print unmapped query proteins
+.TP
+.BI --outn \ NUM
+Output up to
+.RI min{ NUM ,
+.BR -N }
+alignments per query [1000].
+.TP
+.BI -K \ NUM
+Query batch size [2M]
+.SH OUTPUT FORMAT
+.SS The GFF3 Format
+Miniprot outputs alignment in the extended Pairwise mApping Format (PAF) by
+default (see the next subsection). It can also output GFF3 with option
+.BR --gff .
+Miniprot may output three features: `mRNA', `CDS' or `stop_codon'. Here, a
+stop_codon is only reported if the alignment reaches the C-terminus of the
+protein and the next codon is a stop codon. Per GenCode rule, stop_codon is not
+part of CDS but it is part of mRNA.
+
+Miniprot may output the following attributes in GFF3:
+.TS
+center box;
+cb | cb | cb
+l | c | l .
+Attribute	Type	Description
+_
+ID	str	mRNA identifier
+Parent	str	Identifier of the parent feature
+Rank	int	Rank among all hits of the query
+Identity	real	Fraction of exact amino acid matches
+Positive	real	Fraction of positive amino acid matches
+Donor	str	2bp at the donor site if not GT
+Acceptor	str	2bp at the acceptor site if not AG
+Frameshift	int	Number of frameshift events in alignment
+StopCodon	int	Number of in-frame stop codons
+Target	str	Protein coordinate in alignment
+.TE
+
+.SS The PAF Format
+PAF gives detailed alignment. It is a TAB-delimited text format with each line
+consisting of at least 12 fields as are described in the following table:
+.TS
+center box;
+cb | cb | cb
+r | c | l .
+Col	Type	Description
+_
+1	string	Protein sequence name
+2	int	Protein sequence length
+3	int	Protein start coordinate (0-based)
+4	int	Protein end coordinate (0-based)
+5	char	`+' for forward strand; `-' for reverse
+6	string	Contig sequence name
+7	int	Contig sequence length
+8	int	Contig start coordinate on the original strand
+9	int	Contig end coordinate on the original strand
+10	int	Number of matching nucleotides
+11	int	Number of nucleotides in alignment excl. introns
+12	int	Mapping quality (0-255 with 255 for missing)
+.TE
+
+.PP
+PAF may optionally have additional fields in the SAM-like typed key-value
+format. Miniprot may output the following tags:
+.TS
+center box;
+cb | cb | cb
+r | c | l .
+Tag	Type	Description
+_
+AS	i	Alignment score from dynamic programming
+ms	i	Alignment score excluding introns
+np	i	Number of amino acid matches with positive scores
+da	i	Distance to the nearest start codon
+do	i	Distance to the nearest stop codon
+cg	i	Protein CIGAR
+cs	i	Difference string
+.TE
+
+.PP
+A protein CIGAR consists of the following operators:
+.TS
+center box;
+cb | cb
+r | l .
+Op	Description
+_
+nM	Alignment match. Consuming n*3 nucleotides and n amino acids
+nI	Insertion. Consuming n amino acids
+nD	Delection. Consuming n*3 nucleotides
+nF	Frameshift deletion. Consuming n nucleotides
+nG	Frameshift match. Consuming n nucleotides and 1 amino acid
+nN	Phase-0 intron. Consuming n nucleotides
+nU	Phase-1 intron. Consuming n nucleotides and 1 amino acid
+nV	Phase-2 intron. Consuming n nucleotides and 1 amino acid
+.TE
+
+.PP
+The
+.B cs
+tag encodes difference sequences. It consists of a series of operations:
+.TS
+center box;
+cb | cb |cb
+r | l | l .
+Op	Regex	Description
+_
+ :	[0-9]+	Number of identical amino acids
+ *	[acgtn]+[A-Z*]	Substitution: ref to query
+ +	[A-Z]+	# aa inserted to the reference
+ -	[acgtn]+	# nt deleted from the reference
+ ~	[acgtn]{2}[0-9]+[acgtn]{2}	Intron length and splice signal
+.TE
+
+.SH LIMITATIONS
+.TP 2
+*
+The DP alignment score (the AS tag) is not accurate.
+.TP
+*
+Need to introduce more heuristics for improved accuracy.

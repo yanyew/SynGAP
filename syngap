@@ -1,0 +1,225 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+import argparse
+from dual import dual
+from triple import triple
+from custom import custom
+from genepair import genepair
+from evi import EVI
+from eviplot import EVIplot
+
+
+__description__ = ('Synteny-based Genome Annotation Polisher (SynGAP)')
+__author__ = 'Fengqi Wu'
+parser = argparse.ArgumentParser(
+    prog='SynGAP',
+    description='Synteny-based Genome Annotation Polisher (SynGAP)')
+subparsers = parser.add_subparsers()
+
+parser_dual = subparsers.add_parser('dual', help='dual help')
+parser_dual.add_argument("--sp1fa", help="The genome squence file (.fasta format) for species1 [required]",
+                         required=True)
+parser_dual.add_argument("--sp1gff", help="The genome annotation file (.gff format) for species1 [required]",
+                         required=True)
+parser_dual.add_argument("--sp2fa", help="The genome squence file (.fasta format) for species2 [required]",
+                         required=True)
+parser_dual.add_argument("--sp2gff", help="The genome annotation file (.gff format) for species2 [required]",
+                         required=True)
+parser_dual.add_argument("--sp1", default='sp1', help="The short name for species1, e.g. Ath [default: sp1]")
+parser_dual.add_argument("--sp2", default='sp2', help="The short name for species2, e.g. Ath [default: sp2]")
+parser_dual.add_argument("--annoType1", default='mRNA',
+                         help="Feature type to extract for species1 [default: mRNA]")
+parser_dual.add_argument("--annoKey1", default='ID',
+                         help="Key in the attributes to extract for species1 [default: ID]")
+parser_dual.add_argument("--annoparentKey1", default='Parent',
+                         help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_dual.add_argument("--annoType2", default='mRNA',
+                         help="Feature type to extract for species2 [default: mRNA]")
+parser_dual.add_argument("--annoKey2", default='ID',
+                         help="Key in the attributes to extract for species2 [default: ID]")
+parser_dual.add_argument("--annoparentKey2", default='Parent',
+                         help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_dual.add_argument("--datatype", default='nucl',
+                         help="The type of squences for MCScan, nucl|prot [default: nucl]")
+parser_dual.add_argument("--cscore", default='0.7', help="C-score cutoff for MCScan [default: 0.7]")
+parser_dual.add_argument("--threads", default='8', help="Number of threads to use [default: 8]")
+parser_dual.add_argument("--process", default="genblastg",
+                         help="Process for gapanno, genblastg|miniprot [default: genblastg]")
+parser_dual.add_argument("--evalue", default="1e-5", help="Threshold for evalue in genBlast [default: 1e-5]")
+parser_dual.add_argument("--rank", default="5", help="The number of ranks in genBlast output [default: 5]")
+parser_dual.add_argument("--coverage", default="0.5",
+                         help="Minimum percentage of query gene coverage of the HSP group in the genBlast output "
+                              "[default: 0.5]")
+parser_dual.add_argument("--kmer1", default="5", help="k-mer size for Indexing in miniprot [default: 5]")
+parser_dual.add_argument("--kmer2", default="4",
+                         help="k-mer size for the second round of chaining in miniprot [default: 4]")
+parser_dual.add_argument("--outs", default="0.95", help="Threshold of Score for miniprot output [default: 0.95]")
+parser_dual.add_argument("--intron", default="40k",
+                         help="Max intron size allowed for miniprot output [default: 40k]")
+parser_dual.set_defaults(func = dual)
+
+
+parser_triple = subparsers.add_parser('triple', help='triple help')
+parser_triple.add_argument("--sp1fa", help="The genome squence file (.fasta format) for species1 [required]",
+                         required=True)
+parser_triple.add_argument("--sp1gff", help="The genome annotation file (.gff format) for species1 [required]",
+                         required=True)
+parser_triple.add_argument("--sp2fa", help="The genome squence file (.fasta format) for species2 [required]",
+                         required=True)
+parser_triple.add_argument("--sp2gff", help="The genome annotation file (.gff format) for species2 [required]",
+                         required=True)
+parser_triple.add_argument("--sp3fa", help="The genome squence file (.fasta format) for species3 [required]",
+                         required=True)
+parser_triple.add_argument("--sp3gff", help="The genome annotation file (.gff format) for species3 [required]",
+                         required=True)
+parser_triple.add_argument("--sp1", default='sp1', help="The short name for species1, e.g. Ath [default: sp1]")
+parser_triple.add_argument("--sp2", default='sp2', help="The short name for species2, e.g. Ath [default: sp2]")
+parser_triple.add_argument("--sp3", default='sp2', help="The short name for species2, e.g. Ath [default: sp3]")
+parser_triple.add_argument("--annoType1", default='mRNA', help="Feature type to extract for species1 [default: mRNA]")
+parser_triple.add_argument("--annoKey1", default='ID',
+                         help="Key in the attributes to extract for species1 [default: ID]")
+parser_triple.add_argument("--annoparentKey1", default='Parent',
+                         help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_triple.add_argument("--annoType2", default='mRNA', help="Feature type to extract for species2 [default: mRNA]")
+parser_triple.add_argument("--annoKey2", default='ID',
+                         help="Key in the attributes to extract for species2 [default: ID]")
+parser_triple.add_argument("--annoparentKey2", default='Parent',
+                         help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_triple.add_argument("--annoType3", default='mRNA',
+                         help="Feature type to extract for species3 [default: mRNA]")
+parser_triple.add_argument("--annoKey3", default='ID',
+                         help="Key in the attributes to extract for species3 [default: ID]")
+parser_triple.add_argument("--annoparentKey3", default='Parent',
+                         help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_triple.add_argument("--datatype", default='nucl',
+                         help="The type of squences for MCScan, nucl|prot [default: nucl]")
+parser_triple.add_argument("--cscore", default='0.7', help="C-score cutoff for MCScan [default: 0.7]")
+parser_triple.add_argument("--threads", default='8', help="Number of threads to use [default: 8]")
+parser_triple.add_argument("--process", default="genblastg",
+                         help="Process for gapanno, genblastg|miniprot [default: genblastg]")
+parser_triple.add_argument("--evalue", default="1e-5", help="Threshold for evalue in genBlast [default: 1e-5]")
+parser_triple.add_argument("--rank", default="5", help="The number of ranks in genBlast output [default: 5]")
+parser_triple.add_argument("--coverage", default="0.5",
+                         help="Minimum percentage of query gene coverage of the HSP group in the genBlast output "
+                              "[default: 0.5]")
+parser_triple.add_argument("--kmer1", default="5", help="k-mer size for Indexing in miniprot [default: 5]")
+parser_triple.add_argument("--kmer2", default="4",
+                         help="k-mer size for the second round of chaining in miniprot [default: 4]")
+parser_triple.add_argument("--outs", default="0.95",
+                         help="Threshold of Score for miniprot output [default: 0.95]")
+parser_triple.add_argument("--intron", default="40k",
+                         help="Max intron size allowed for miniprot output [default: 40k]")
+parser_triple.set_defaults(func = triple)
+
+
+parser_custom = subparsers.add_parser('custom', help='custom help')
+parser_custom.add_argument("--sp1fa", help="The squence file (.fasta format) for species1 [required]",
+                           required=True)
+parser_custom.add_argument("--sp1gff", help="The annotation file (.gff format) for species1 [required]",
+                           required=True)
+parser_custom.add_argument("--sp2fa", help="The squence file (.fasta format) for species2 [required]",
+                           required=True)
+parser_custom.add_argument("--sp2gff", help="The annotation file (.gff format) for species2 [required]",
+                           required=True)
+parser_custom.add_argument("--custom_anchors", help="Choose the self-defined Syntenic anchors file [required]",
+                           required=True)
+parser_custom.add_argument("--sp1", default='sp1', help="The short name for species1, e.g. Ath [default: sp1]")
+parser_custom.add_argument("--sp2", default='sp2', help="The short name for species2, e.g. Ath [default: sp2]")
+parser_custom.add_argument("--annoType1", default='mRNA',
+                           help="Feature type to extract for species1 [default: mRNA]")
+parser_custom.add_argument("--annoKey1", default='ID',
+                           help="Key in the attributes to extract for species1 [default: ID]")
+parser_custom.add_argument("--annoparentKey1", default='Parent',
+                           help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_custom.add_argument("--annoType2", default='mRNA',
+                           help="Feature type to extract for species2 [default: mRNA]")
+parser_custom.add_argument("--annoKey2", default='ID',
+                           help="Key in the attributes to extract for species2 [default: ID]")
+parser_custom.add_argument("--annoparentKey2", default='Parent',
+                           help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_custom.add_argument("--datatype", default='nucl',
+                           help="The type of squences for MCScan, nucl|prot [default: nucl]")
+parser_custom.add_argument("--cscore", default='0.7', help="C-score cutoff for MCScan [default: 0.7]")
+parser_custom.add_argument("--threads", default='8', help="Number of threads to use [default: 8]")
+parser_custom.add_argument("--process", default="genblastg",
+                           help="Process for gapanno, genblastg|miniprot [default: genblastg]")
+parser_custom.add_argument("--evalue", default="1e-5", help="Threshold for evalue in genBlast [default: 1e-5]")
+parser_custom.add_argument("--rank", default="5", help="The number of ranks in genBlast output [default: 5]")
+parser_custom.add_argument("--coverage", default="0.5",
+                         help="Minimum percentage of query gene coverage of the HSP group in the genBlast output "
+                              "[default: 0.5]")
+parser_custom.add_argument("--kmer1", default="5",
+                           help="k-mer size for Indexing in miniprot [default: 5]")
+parser_custom.add_argument("--kmer2", default="4",
+                           help="k-mer size for the second round of chaining in miniprot [default: 4]")
+parser_custom.add_argument("--outs", default="0.95",
+                           help="Threshold of Score for miniprot output [default: 0.95]")
+parser_custom.add_argument("--intron", default="40k",
+                           help="Max intron size allowed for miniprot output [default: 40k]")
+parser_custom.set_defaults(func = custom)
+
+
+parser_genepair = subparsers.add_parser('genepair', help='genepair help')
+parser_genepair.add_argument("--sp1fa", help="The squence file (.fasta format) for species1 [required]",
+                             required=True)
+parser_genepair.add_argument("--sp1gff", help="The annotation file (.gff format) for species1 [required]",
+                             required=True)
+parser_genepair.add_argument("--sp2fa", help="The squence file (.fasta format) for species2 [required]",
+                             required=True)
+parser_genepair.add_argument("--sp2gff", help="The annotation file (.gff format) for species2 [required]",
+                             required=True)
+parser_genepair.add_argument("--sp1", default='sp1', help="The short name for species1, e.g. Ath [default: sp1]")
+parser_genepair.add_argument("--sp2", default='sp2', help="The short name for species2, e.g. Ath [default: sp2]")
+parser_genepair.add_argument("--annoType1", default='mRNA',
+                             help="Feature type to extract for species1 [default: mRNA]")
+parser_genepair.add_argument("--annoKey1", default='ID',
+                             help="Key in the attributes to extract for species1 [default: ID]")
+parser_genepair.add_argument("--annoparentKey1", default='Parent',
+                             help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_genepair.add_argument("--annoType2", default='mRNA',
+                             help="Feature type to extract for species2 [default: mRNA]")
+parser_genepair.add_argument("--annoKey2", default='ID',
+                             help="Key in the attributes to extract for species2 [default: ID]")
+parser_genepair.add_argument("--annoparentKey2", default='Parent',
+                             help="Parent gene key to group with --primary_only in jcvi [default: Parent]")
+parser_genepair.add_argument("--datatype", default='nucl',
+                             help="The type of squences for MCScan, nucl|prot [default: nucl]")
+parser_genepair.add_argument("--cscore", default='0.7',
+                             help="C-score cutoff for MCScan [default: 0.7]")
+parser_genepair.add_argument("--evalue", default="1e-2",
+                             help="Threshold for evalue in two-way blast [default: 1e-2]")
+parser_genepair.add_argument("--iTAK", default="no",
+                             help="Perform iTAK to identify TFs and kinases (only for plants), yse|no [default: no]")
+parser_genepair.add_argument("--threads", default='8', help="Number of threads to use [default: 8]")
+parser_genepair.set_defaults(func = genepair)
+
+
+parser_evi = subparsers.add_parser('evi', help='evi help')
+parser_evi.add_argument("--genepair", help="The genepair file (tab-divided) for EVI counting [required]",
+                        required=True)
+parser_evi.add_argument("--sp1exp", help="The expression file (tab-divided) for species1 [required]",
+                        required=True)
+parser_evi.add_argument("--sp2exp", help="The expression file (tab-divided) for species2 [required]",
+                        required=True)
+parser_evi.add_argument('--weight', help='the weight of three indexes in EVI calulating(ML:FC:PCC) [default=1:1:4]',
+                        default='1:1:4')
+parser_evi.add_argument('--format', help="The format of output figure", default='pdf')
+parser_evi.set_defaults(func = EVI)
+
+
+parser_eviplot = subparsers.add_parser('eviplot', help='eviplot help')
+parser_eviplot.add_argument("--EVI", help="The EVI file (tab-divided) for ploting [required]", required=True)
+parser_eviplot.add_argument("--highlightid", help="The id list file (tab-divided) for highlightid")
+parser_eviplot.add_argument("--highlightcolor", help="The color for highlight label [default=red]", default='red')
+parser_eviplot.add_argument("--outgraph",
+                            help="The output graph file (output format determined by the file suffix) [required]",
+                            required=True)
+parser_eviplot.add_argument('--figsize', help='the size of output graph (LengthxWidth) [default=10x5]',
+                            default='10x5')
+parser_eviplot.add_argument('--fontsize', help='the font size of output graph [default=10]', default='10')
+parser_eviplot.set_defaults(func = EVIplot)
+
+
+if __name__ == "__main__":
+    args = parser.parse_args()
+    args.func(args)
