@@ -11,7 +11,7 @@ Find source codes and documentation at [https://github.com/yanyew/SynGAP](https:
 <a name="YLr3p"></a>
 ## conda (recommended)
 ```
-conda install -c yanyew syngap
+conda install -c conda-forge -c bioconda -c yanyew syngap
 ```
 <a name="lP3Sh"></a>
 ## manually
