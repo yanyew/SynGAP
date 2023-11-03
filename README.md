@@ -6,8 +6,8 @@ It supports two main workflows:
 (1) **genome annotations polishment for related species** (_dual_, _master_, _triple_, and _custom_);
 (2) **gene differential expression analysis of related species** (_genepair_, _evi_, and _eviplot_).
 
-Find source codes and documentation at [https://github.com/yanyew/SynGAP](https://github.com/yanyew/SynGAP)
-For any question about SynGAP, please contact 360875601w@gamil.com
+Find source codes and documentation at [https://github.com/yanyew/SynGAP](https://github.com/yanyew/SynGAP)<br />
+For any question about SynGAP, please contact 360875601w@gamil.com<br />
 If you use SynGAP, please cite:
 
 # Installation
@@ -66,8 +66,8 @@ You can also chosse to polish the gene structural annotations of one species wit
 | _Zea mays_ | _Sus scrofa_ |
 |  | _Xenopus tropicalis_ |
 
-To use SynGAP master, you should first download the database from the link below, which include plant.tar.gz and animal.tar.gz. You can choose the one you need.
-[https://tbtools.cowtransfer.com/s/85ed3920aa7f47](https://tbtools.cowtransfer.com/s/85ed3920aa7f47)
+To use SynGAP master, you should first download the database from the link below, which include plant.tar.gz and animal.tar.gz. You can choose the one you need.<br />
+[https://tbtools.cowtransfer.com/s/85ed3920aa7f47](https://tbtools.cowtransfer.com/s/85ed3920aa7f47)<br />
 Then import the downloaded database:
 ```
 syngap initdb \
