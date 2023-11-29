@@ -6,7 +6,8 @@ It supports two main workflows:
 (1) **genome annotations polishment for related species** (_dual_, _master_, _triple_, and _custom_);
 (2) **gene differential expression analysis of related species** (_genepair_, _evi_, and _eviplot_).
 
-Find source codes and documentation at [https://github.com/yanyew/SynGAP](https://github.com/yanyew/SynGAP) and [https://www.yuque.com/yanyew/gc786d](https://www.yuque.com/yanyew/gc786d)<br />
+Find source codes and documentation at [https://github.com/yanyew/SynGAP](https://github.com/yanyew/SynGAP)<br />
+Find detailed documentation at [https://www.yuque.com/yanyew/gc786d](https://www.yuque.com/yanyew/gc786d)<br />
 For any question about SynGAP, please contact 360875601w@gamil.com<br />
 If you use SynGAP, please cite:
 
