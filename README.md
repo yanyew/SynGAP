@@ -14,7 +14,7 @@ If you use SynGAP, please cite:
 # Installation
 ## conda (recommended)
 ```
-conda install -c conda-forge -c bioconda syngap
+conda install -c bioconda syngap
 ```
 ## manually
 ```
@@ -23,6 +23,11 @@ git clone git://github.com/yanyew/SynGAP.git
 cd ~/code/SynGAP
 conda env create -f SynGAP.environment.yaml
 export PATH=~/code/SynGAP:$PATH
+```
+## Docker image
+```
+docker pull yanyew/syngap:1.1.0
+conda activate syngap # activate the conda environment for SynGAP
 ```
 # Usage
 ## genome annotations polishment
