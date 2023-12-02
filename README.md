@@ -1,7 +1,7 @@
 # SynGAP
 A toolkit for comparative genomics and transcriptomics research of related species.
 
-**SynGAP** (**Synteny-based Gene structure Annotation Polisher**) is a command-line software written in Python3, suitable for Linux or macOS operating systems.
+**SynGAP** (**Synteny-based Gene Structure Annotation Polisher**) is a command-line software written in Python3, suitable for Linux operating systems. And we provides the image that can be used for other operating systems such as MacOS and Windows.
 It supports two main workflows:
 (1) **genome annotations polishment for related species** (_dual_, _master_, _triple_, and _custom_);
 (2) **gene differential expression analysis of related species** (_genepair_, _evi_, and _eviplot_).
