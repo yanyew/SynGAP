@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
-import os
-import sys
-import subprocess
 import multiprocessing
+import os
+import subprocess
+import sys
+import glob
 from Bio import SeqIO
 
 
@@ -45,16 +46,26 @@ def gapanno(miniprotdir, kmer1, kmer2, outs, intron, pnumber):
     querynumber = inf_querynumber.readline()
     subjectnumber = inf_subjectnumber.readline()
     if querynumber != subjectnumber:
-        print('Query number differences from subject number. Please check the previous step(gapseq).')
+        print('Query number is different from subject number. Please check the previous step (gapseq).')
     else:
         for n in range(int(querynumber)):
             pool.apply_async(miniprotcmd, (miniprotdir, kmer1, kmer2, outs, intron, n))
     pool.close()
     pool.join()
-    mergecommandline = 'find ./miniprotoutput -name "*.gff" | xargs -i cat {} | ' \
-                       'sed "s/##gff-version 3//g" | sed "/^\s*$/d" > ' + '../modified.raw.gff'
-    subprocess.run(str(mergecommandline), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                   encoding="utf-8")
+    directory = "./miniprotoutput"
+    file_extension = "*.gff"
+    file_list = glob.glob(os.path.join(directory, file_extension))
+    merged_content = ""
+    for file_path in file_list:
+        with open(file_path, 'r') as file:
+            file_content = file.read()
+            merged_content += file_content
+    modified_content = merged_content.replace("##gff-version 3", "").strip()
+    output_path = "../modified.raw.gff"
+    with open(output_path, 'w') as output_file:
+        output_file.write(modified_content)
+    inf_querynumber.close()
+    inf_subjectnumber.close()
     inf_querynumber.close()
     inf_subjectnumber.close()
 

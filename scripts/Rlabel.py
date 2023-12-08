@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
-import sys
 import os
+import sys
+
 
 def reformatneedle(path, sp, n):
     seq_id_dict = {}
@@ -30,13 +31,13 @@ def reformatneedle(path, sp, n):
             elif line[0:9] == '# Length:':
                 Length = line[10:].strip('\n')
             elif line[0:11] == '# Identity:':
-                Identity_counts = ((line.split(':')[1]).split('/')[0]).replace(' ','')
+                Identity_counts = ((line.split(':')[1]).split('/')[0]).replace(' ', '')
             elif line[0:13] == '# Similarity:':
-                Similarity_counts = ((line.split(':')[1]).split('/')[0]).replace(' ','')
+                Similarity_counts = ((line.split(':')[1]).split('/')[0]).replace(' ', '')
             elif line[0:7] == '# Gaps:':
-                Gaps_counts = ((line.split(':')[1]).split('/')[0]).replace(' ','')
+                Gaps_counts = ((line.split(':')[1]).split('/')[0]).replace(' ', '')
             elif line[0:8] == '# Score:':
-                Score = ((line.split(':')[1]).rstrip('\n')).replace(' ','')
+                Score = ((line.split(':')[1]).rstrip('\n')).replace(' ', '')
         Identity = int(Identity_counts) / int(Length)
         Similarity = int(Similarity_counts) / int(Length)
         Gaps = int(Gaps_counts) / int(Length)
@@ -49,7 +50,7 @@ def reformatneedle(path, sp, n):
         Score_dict[seq_id1] = Score
         R_dict[seq_id1] = R
         nf.close()
-    return(seq_id_dict, Length_dict, Identity_dict, Similarity_dict, Gaps_dict, Score_dict, R_dict)
+    return (seq_id_dict, Length_dict, Identity_dict, Similarity_dict, Gaps_dict, Score_dict, R_dict)
 
 
 def Rlabel(sp, gff, outR, outgff):
@@ -60,7 +61,8 @@ def Rlabel(sp, gff, outR, outgff):
     og = open(outgff, 'w')
     oR.write("ID\torigin_ID\tLength\tIdentity\tSimilarity\tGaps\tScore\tR\tClassification\n")
     n = numf.readline()
-    seq_id_dict, Length_dict, Identity_dict, Similarity_dict, Gaps_dict, Score_dict, R_dict = reformatneedle(path, sp, n)
+    seq_id_dict, Length_dict, Identity_dict, Similarity_dict, Gaps_dict, Score_dict, R_dict = reformatneedle(path, sp,
+                                                                                                             n)
     while True:
         line = gf.readline()
         if not line: break

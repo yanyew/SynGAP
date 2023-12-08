@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 import sys
 
+
 def dict_bed(infile):
     inf_bed = open(infile, 'r')
     gene_chr = {}

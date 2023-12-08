@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
-import sys
+import multiprocessing
 import os
 import shlex
-import shutil
 import subprocess
-import multiprocessing
+import sys
+
 
 def modifiedalign2origin(sp, infasta1, infasta2):
     inf1 = open(infasta1, 'r')

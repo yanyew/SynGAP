@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
+import datetime
 import os
 import sys
-import datetime
 
 
 def genepair_in_anchors(infile, outfile):
@@ -19,7 +19,7 @@ def genepair_in_anchors(infile, outfile):
 
 def genelist_bed(infile):
     inf_bed = open(infile, 'r')
-    bed_genelist= []
+    bed_genelist = []
     while True:
         line = inf_bed.readline()
         if not line: break
@@ -91,15 +91,19 @@ def twoway_blast(sp1, sp2, datatype, evalue, pnumber):
     query_sp1 = sp1 + '.query.fa'
     query_sp2 = sp2 + '.query.fa'
     if datatype == 'nucl':
-        os.system('makeblastdb -in ' + query_sp1 + ' -dbtype nucl -out PDB_' + sp1 + ' > ' + sp1 + '.makeblastdb.log 2>&1')
-        os.system('makeblastdb -in ' + query_sp2 + ' -dbtype nucl -out PDB_' + sp2 + ' > ' + sp2 + '.makeblastdb.log 2>&1')
+        os.system(
+            'makeblastdb -in ' + query_sp1 + ' -dbtype nucl -out PDB_' + sp1 + ' > ' + sp1 + '.makeblastdb.log 2>&1')
+        os.system(
+            'makeblastdb -in ' + query_sp2 + ' -dbtype nucl -out PDB_' + sp2 + ' > ' + sp2 + '.makeblastdb.log 2>&1')
         os.system('blastn -query ' + sp1 + '.query.fa -db PDB_' + sp2 + ' -out ' + sp12sp2_blast +
                   ' -outfmt 6 -evalue ' + str(evalue) + ' -max_target_seqs 1000 -num_threads ' + pnumber)
         os.system('blastn -query ' + sp2 + '.query.fa -db PDB_' + sp1 + ' -out ' + sp22sp1_blast +
                   ' -outfmt 6 -evalue ' + str(evalue) + ' -max_target_seqs 1000 -num_threads ' + pnumber)
     elif datatype == 'prot':
-        os.system('makeblastdb -in ' + query_sp1 + ' -dbtype prot -out PDB_' + sp1 + ' > ' + sp1 + '.makeblastdb.log 2>&1')
-        os.system('makeblastdb -in ' + query_sp2 + ' -dbtype prot -out PDB_' + sp2 + ' > ' + sp2 + '.makeblastdb.log 2>&1')
+        os.system(
+            'makeblastdb -in ' + query_sp1 + ' -dbtype prot -out PDB_' + sp1 + ' > ' + sp1 + '.makeblastdb.log 2>&1')
+        os.system(
+            'makeblastdb -in ' + query_sp2 + ' -dbtype prot -out PDB_' + sp2 + ' > ' + sp2 + '.makeblastdb.log 2>&1')
         os.system('blastp -query ' + sp1 + '.query.fa -db PDB_' + sp2 + ' -out ' + sp12sp2_blast +
                   ' -outfmt 6 -evalue ' + str(evalue) + ' -max_target_seqs 1000 -num_threads ' + pnumber)
         os.system('blastp -query ' + sp2 + '.query.fa -db PDB_' + sp1 + ' -out ' + sp22sp1_blast +
@@ -163,9 +167,9 @@ def genepair(args):
     os.system('cp ' + str(args.sp2gff) + ' ' + sp2gff)
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
 
-    # Perform MCScan for species1 and species2
-    print('[\033[0;36mINFO\033[0m] Performing MCScan for \033[0;35m' + args.sp1 + '\033[0m '
-          'and \033[0;35m' + args.sp2 + '\033[0m, please wait ...')
+    # Perform jcvi for species1 and species2
+    print('[\033[0;36mINFO\033[0m] Performing jcvi for \033[0;35m' + args.sp1 +
+          '\033[0m and \033[0;35m' + args.sp2 + '\033[0m, please wait ...')
     print('[\033[0;36mINFO\033[0m] Preparing files ...')
     ## prepare files for original_id
     sp1bed = genepair_Dir + '/' + str(args.sp1) + '.bed'
@@ -197,7 +201,7 @@ def genepair(args):
     os.system('gffread ' + sp2gff + ' -g ' + sp2fa + ' -y ' + sp2pep + ' -S')
     os.system('seqkit grep -f ' + sp2priid + ' ' + sp2pep + ' > ' + sp2pripep)
 
-    ## perform MCScan using renamed_id files
+    ## perform jcvi using renamed_id files
     global mcscan_type
     if str(args.datatype) == 'nucl':
         mcscan_type = 'mcscan_cds'
@@ -225,20 +229,20 @@ def genepair(args):
     os.system('python -m jcvi.compara.catalog ortholog ' + str(args.sp1) + ' ' + str(args.sp2) +
               ' --dbtype=' + str(args.datatype) + ' --cscore=' + str(args.cscore) + ' --cpus=' +
               str(args.threads) + ' --no_strip_names --notex')
-    print('\n[\033[0;36mINFO\033[0m]  MCScan for \033[0;35m' + args.sp1 + '\033[0m '
-          'and \033[0;35m' + args.sp2 + '\033[0m Done!\n')
+    print('\n[\033[0;36mINFO\033[0m] jcvi for \033[0;35m' + args.sp1 +
+          '\033[0m and \033[0;35m' + args.sp2 + '\033[0m Done!\n')
 
     os.chdir(genepair_Dir)
-    print('[\033[0;36mINFO\033[0m] Extracting syntenic gene pairs for \033[0;35m' + args.sp1 + '\033[0m '
-          'and \033[0;35m' + args.sp2 + '\033[0m, please wait ...')
+    print('[\033[0;36mINFO\033[0m] Extracting syntenic gene pairs for \033[0;35m' + args.sp1 +
+          '\033[0m and \033[0;35m' + args.sp2 + '\033[0m, please wait ...')
     anchors = genepair_Dir + '/' + mcscan_type + '/' + str(args.sp1) + '.' + str(args.sp2) + '.anchors'
     os.system('ln -s ' + anchors)
     pairwithSyn = args.sp1 + '.' + args.sp2 + '.Synteny.genepair'
     genepair_in_anchors(anchors, pairwithSyn)
     print('[\033[0;36mINFO\033[0m] Extracting Done!\n')
 
-    print('[\033[0;36mINFO\033[0m] Extracting two-way best-blast gene pairs for \033[0;35m' + args.sp1 + '\033[0m '
-          'and \033[0;35m' + args.sp2 + '\033[0m, please wait ...')
+    print('[\033[0;36mINFO\033[0m] Extracting best two-way BLAST gene pairs for \033[0;35m' + args.sp1 +
+          '\033[0m and \033[0;35m' + args.sp2 + '\033[0m, please wait ...')
     if str(args.datatype) == 'nucl':
         prepareseq(str(args.sp1), str(args.sp2), sp1pricds, sp2pricds, sp1bed, sp2bed, pairwithSyn)
         twoway_blast(str(args.sp1), str(args.sp2), str(args.datatype), str(args.evalue), str(args.threads))
@@ -255,15 +259,17 @@ def genepair(args):
     out_pairwith2wayblast.close()
     print('[\033[0;36mINFO\033[0m] Extracting Done!\n')
 
-    print('[\033[0;36mINFO\033[0m] Merging syntenic and two-way best-blast gene pairs for \033[0;35m' + args.sp1 + '\033[0m '
-          'and \033[0;35m' + args.sp2 + '\033[0m, please wait ...')
+    print(
+        '[\033[0;36mINFO\033[0m] Merging syntenic and best two-way BLAST gene pairs for \033[0;35m' + args.sp1 +
+        '\033[0m and \033[0;35m' + args.sp2 + '\033[0m, please wait ...')
     genepair = args.sp1 + '.' + args.sp2 + '.final.genepair'
     if args.iTAK == 'no':
         os.system('cat ' + pairwithSyn + ' ' + pairwith2wayblast + ' > ' + genepair)
         print('[\033[0;36mINFO\033[0m] Merging Done!\n')
     elif args.iTAK == 'yes':
         infa = open(sp1pripep, 'r')
-        os.system('perl ' + str(script_dir) + '/bin/iTAK/iTAK.pl -p ' + args.threads + ' -o ' + args.sp1 + '_iTAK ' + sp1pricds)
+        os.system('perl ' + str(
+            script_dir) + '/bin/iTAK/iTAK.pl -p ' + args.threads + ' -o ' + args.sp1 + '_iTAK ' + sp1pricds)
         inf_tf_c = open(args.sp1 + '_iTAK/tf_classification.txt', 'r')
         gene_type = {}
         while True:

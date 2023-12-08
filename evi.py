@@ -1,12 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import math
-import pandas as pd
-from scipy.stats import pearsonr
-import numpy as np
-import matplotlib.pyplot as plt
-from kneed import KneeLocator
 import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from kneed import KneeLocator
+from scipy.stats import pearsonr
 
 
 def filter_exp(genelist, expfile):
@@ -37,8 +38,8 @@ def EVI(args):
 
     filter_exp(geneset1, args.sp1exp)
     filter_exp(geneset2, args.sp2exp)
-    Expdataset1 = pd.read_csv(args.sp1exp+".pair.tmp", sep="\t", header=0, index_col="GeneID")
-    Expdataset2 = pd.read_csv(args.sp2exp+".pair.tmp", sep="\t", header=0, index_col="GeneID")
+    Expdataset1 = pd.read_csv(args.sp1exp + ".pair.tmp", sep="\t", header=0, index_col="GeneID")
+    Expdataset2 = pd.read_csv(args.sp2exp + ".pair.tmp", sep="\t", header=0, index_col="GeneID")
 
     Expavgset1 = Expdataset1.mean(axis=1)
     Expavgset2 = Expdataset2.mean(axis=1)
@@ -46,7 +47,7 @@ def EVI(args):
 
     global output_tf, output_nontf
     if gene_type1:
-        output = open(args.genepair+".EVI.raw.xls",'w+')
+        output = open(args.genepair + ".EVI.raw.xls", 'w+')
         output.write("GeneID1\tGeneID2\tHigherAvgExpGeneID\tGeneType\tAvgExpMax\tFoldchange\tPearson\tEVI\n")
         output_se = open(args.genepair + ".SEG.EVI.xls", 'w+')
         output_se.write("GeneID1\tGeneID2\tHigherAvgExpGeneID\tGeneType\tAvgExpMax\tFoldchange\tPearson\tEVI\n")
@@ -131,7 +132,7 @@ def EVI(args):
         output_tf.close()
         output_nontf.close()
     else:
-        output = open(args.genepair+".EVI.raw.xls",'w+')
+        output = open(args.genepair + ".EVI.raw.xls", 'w+')
         output.write("GeneID1\tGeneID2\tHigherAvgExpGeneID\tGeneType\tAvgExpMax\tFoldchange\tPearson\tEVI\n")
         output_se = open(args.genepair + ".SEG.EVI.xls", 'w+')
         output_se.write("GeneID1\tGeneID2\tHigherAvgExpGeneID\tGeneType\tAvgExpMax\tFoldchange\tPearson\tEVI\n")
@@ -190,10 +191,10 @@ def EVI(args):
                         str(round(pearson1, 2)) + "\t" + str(round(EVI, 2)) + "\n")
         output.close()
 
-    dataset_all = pd.read_csv(args.genepair+".EVI.raw.xls", sep="\t", header=0)
+    dataset_all = pd.read_csv(args.genepair + ".EVI.raw.xls", sep="\t", header=0)
     df_all = dataset_all.sort_values(by='EVI', ascending=False)
     df1_all = df_all.reset_index(drop=True)
-    df1_all.to_csv(args.genepair+".EVI.raw.xls", sep='\t', index=False, header=True)
+    df1_all.to_csv(args.genepair + ".EVI.raw.xls", sep='\t', index=False, header=True)
     df1_all = df1_all.drop_duplicates(subset=['GeneID1'], keep='last')
     df1_all = df1_all.reset_index(drop=True)
     df1_all.to_csv(args.genepair + ".EVI.xls", sep='\t', index=False, header=True)
@@ -219,7 +220,7 @@ def EVI(args):
     x_vals = list(range(1, 15000, 10))
     y_vals = p1(x_vals)
     kneedle = KneeLocator(x_vals, y_vals, S=1, curve="convex", direction="decreasing", online=True)
-    output_threshold = open(args.genepair+".EVI.threshold.txt",'w+')
+    output_threshold = open(args.genepair + ".EVI.threshold.txt", 'w+')
     output_threshold.write("Threshold for EVI: " + str(round(kneedle.knee_y, 2)))
     output_threshold.close()
     plt.hlines(round(kneedle.knee_y, 2), 1, len(df1_all['EVI']) + 1,
@@ -284,7 +285,7 @@ def EVI(args):
     x_vals = list(range(1, 20000, 10))
     y_vals = p4(x_vals)
     kneedle = KneeLocator(x_vals, y_vals, S=1, curve="convex", direction="decreasing", online=True)
-    output_threshold = open(args.genepair + ".TF.EVI.threshold.txt", 'w+')
+    output_threshold = open(args.genepair + ".SEG.EVI.threshold.txt", 'w+')
     output_threshold.write("Threshold for EVI: " + str(round(kneedle.knee_y, 3)))
     output_threshold.close()
     plt.hlines(round(kneedle.knee_y, 3), 1, len(df1_se['EVI']) + 1,

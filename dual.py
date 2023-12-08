@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
-import os
 import datetime
+import os
+
 from scripts import SynGAP_genblastg, SynGAP_miniprot
 
 

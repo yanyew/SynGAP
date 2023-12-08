@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
+import datetime
 import os
 import sys
-import datetime
+
 from scripts import gapbed, getgenepairs, gffgrep, gapseq, gapanno_miniprot, Rlabel, redundantfilter, findnonfunc, \
     polishtypescan, splitmodgff_miniprot, gapfind, modalign2origin, findID, overlapfilter
 
@@ -26,9 +27,9 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
     sp2gff = workDir + '/' + str(sp2) + '.gff3'
     os.chdir(workDir)
 
-    # Perform MCScan for species1 and species2
-    print('[\033[0;36mINFO\033[0m] Performing MCScan for \033[0;35m' + sp1 + '\033[0m '
-          'and \033[0;35m' + sp2 + '\033[0m, please wait ...')
+    # Perform jcvi for species1 and species2
+    print('[\033[0;36mINFO\033[0m] Performing jcvi for \033[0;35m' + sp1 +
+          '\033[0m and \033[0;35m' + sp2 + '\033[0m, please wait ...')
     print('[\033[0;36mINFO\033[0m] Preparing files ...')
     ## prepare files
     os.mkdir(SynGAP_workspace_Dir + '/original')
@@ -60,58 +61,48 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
     os.system('seqkit grep -f ' + sp2priid + ' ' + sp2cds + ' > ' + sp2pricds)
     os.system('gffread ' + sp2gff + ' -g ' + sp2fa + ' -y ' + sp2pep + ' -S')
     os.system('seqkit grep -f ' + sp2priid + ' ' + sp2pep + ' > ' + sp2pripep)
-    ## perform MCScan
-    global mcscan_type
+    ## perform jcvi
+    global jcvi_type, jcviDir
     if str(datatype) == 'nucl':
-        mcscan_type = 'mcscan_cds'
-        os.mkdir(SynGAP_workspace_Dir + '/' + mcscan_type)
-        os.system('ln -s ' + SynGAP_workspace_Dir + '/original/' + str(sp1) + '.primary.cds ' +
-                      SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(sp1) + '.cds')
-        os.system('ln -s ' + SynGAP_workspace_Dir + '/original/' + str(sp1) + '.bed ' +
-                      SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(sp1) + '.bed')
-        os.system('ln -s ' + SynGAP_workspace_Dir + '/original/' + str(sp2) + '.primary.cds ' +
-                      SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(sp2) + '.cds')
-        os.system('ln -s ' + SynGAP_workspace_Dir + '/original/' + str(sp2) + '.bed ' +
-                      SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(sp2) + '.bed')
+        jcvi_type = 'jcvi_cds'
+        jcviDir = SynGAP_workspace_Dir + '/' + jcvi_type
+        os.mkdir(jcviDir)
+        os.symlink(sp1pricds, jcviDir + '/' + str(sp1) + '.cds')
+        os.symlink(sp1bed, jcviDir + '/' + str(sp1) + '.bed')
+        os.symlink(sp2pricds, jcviDir + '/' + str(sp2) + '.cds')
+        os.symlink(sp2bed, jcviDir + '/' + str(sp2) + '.bed')
     elif str(datatype) == 'prot':
-        mcscan_type = 'mcscan_pep'
-        os.mkdir(SynGAP_workspace_Dir + '/' + mcscan_type)
-        os.system('ln -s ' + SynGAP_workspace_Dir + '/original/' + str(sp1) + '.primary.pep ' +
-                      SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(sp1) + '.pep')
-        os.system('ln -s ' + SynGAP_workspace_Dir + '/original/' + str(sp1) + '.bed ' +
-                      SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(sp1) + '.bed')
-        os.system('ln -s ' + SynGAP_workspace_Dir + '/original/' + str(sp2) + '.primary.pep ' +
-                      SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(sp2) + '.pep')
-        os.system('ln -s ' + SynGAP_workspace_Dir + '/original/' + str(sp2) + '.bed ' +
-                      SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(sp2) + '.bed')
-    os.chdir(SynGAP_workspace_Dir + '/' + mcscan_type)
+        jcvi_type = 'jcvi_pep'
+        jcviDir = SynGAP_workspace_Dir + '/' + jcvi_type
+        os.mkdir(jcviDir)
+        os.symlink(sp1pripep, jcviDir + '/' + str(sp1) + '.pep')
+        os.symlink(sp1bed, jcviDir + '/' + str(sp1) + '.bed')
+        os.symlink(sp2pripep, jcviDir + '/' + str(sp2) + '.pep')
+        os.symlink(sp2bed, jcviDir + '/' + str(sp2) + '.bed')
+    os.chdir(jcviDir)
     os.system('python -m jcvi.compara.catalog ortholog ' + str(sp1) + ' ' + str(sp2) +
-                     ' --dbtype=' + str(datatype) + ' --cscore='  + str(cscore) + ' --cpus=' +
-                     str(threads) + ' --no_strip_names --notex')
-    print('\n[\033[0;36mINFO\033[0m]  MCScan for \033[0;35m' + sp1 + '\033[0m '
-          'and \033[0;35m' + sp2 + '\033[0m Done!\n')
+              ' --dbtype=' + str(datatype) + ' --cscore=' + str(cscore) + ' --cpus=' +
+              str(threads) + ' --no_strip_names --notex')
+    print('\n[\033[0;36mINFO\033[0m]  jcvi for \033[0;35m' + sp1 +
+          '\033[0m and \033[0;35m' + sp2 + '\033[0m Done!\n')
 
     # Find gaps from the .anchors file
     os.chdir(workDir)
     print('[\033[0;36mINFO\033[0m] Finding gaps from the .anchors file, please wait ...')
     anchors = SynGAP_workspace_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors'
     anchors_gap = SynGAP_workspace_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors.gap'
-    os.system('ln -s ' + SynGAP_workspace_Dir + '/' + mcscan_type + '/' + str(
-        sp1) + '.' + str(sp2) + '.anchors ' + anchors)
+    os.symlink(jcviDir + '/' + str(sp1) + '.' + str(sp2) + '.anchors', anchors)
     print('[\033[0;36mINFO\033[0m] Finding ...')
     gapfind.gap_find(sp1bed, sp2bed, anchors, anchors_gap)
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
-    print('[\033[0;36mINFO\033[0m] Extracting syntenic gene pairs from MCScan results for '
+    print('[\033[0;36mINFO\033[0m] Extracting syntenic gene pairs from jcvi results for '
           '\033[0;35m' + str(sp1) + '\033[0m and \033[0;35m' + str(sp2) + '\033[0m , please wait ...')
     Sgenepairs = SynGAP_workspace_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors.genepairs'
     getgenepairs.get_genepair(anchors, Sgenepairs)
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
-    os.system('ln -s ' + anchors + ' ' + SynGAP_results_Dir + '/' + str(sp1) + '.' + str(
-        sp2) + '.anchors')
-    os.system('ln -s ' + anchors_gap + ' ' + SynGAP_results_Dir + '/' + str(sp1) + '.' + str(
-        sp2) + '.anchors.gap')
-    os.system('ln -s ' + Sgenepairs + ' ' + SynGAP_results_Dir + '/' + str(sp1) + '.' + str(
-        sp2) + '.anchors.genepairs')
+    os.symlink(anchors, SynGAP_results_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors')
+    os.symlink(anchors_gap, SynGAP_results_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors.gap')
+    os.symlink(Sgenepairs, SynGAP_results_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors.genepairs')
 
     # Extract .bed information for the gaps from .anchors.gap
     print('[\033[0;36mINFO\033[0m] Extracting .bed information for the gaps, please wait ...')
@@ -120,7 +111,7 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
     gapbed.gapbed(anchors_gap, sp1bed, sp2bed, sp1gapbed, sp2gapbed)
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
 
-    # Prepare squences data for gap annotation
+    # Prepare sequences data for gap annotation
     print('[\033[0;36mINFO\033[0m] Preparing sequences for gap annotation, please wait ...')
     os.mkdir(SynGAP_workspace_Dir + '/gapanno')
     os.chdir(SynGAP_workspace_Dir + '/gapanno')
@@ -129,7 +120,8 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
 
     # Perform gap annotation
     print('[\033[0;36mINFO\033[0m] Performing gap annotation, please wait ...')
-    gapanno_miniprot.gapanno(str(script_dir) + '/bin/miniprot', str(kmer1), str(kmer2), str(outs), str(intron), str(threads))
+    gapanno_miniprot.gapanno(str(script_dir) + '/bin/miniprot', str(kmer1), str(kmer2), str(outs), str(intron),
+                             str(threads))
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
 
     # Split the modified annotation file
@@ -241,7 +233,8 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
 
     # Perform gene function prediction for original genome annotations
-    print('[\033[0;36mINFO\033[0m] Performing gene function prediction for original genome annotations, please wait ...')
+    print(
+        '[\033[0;36mINFO\033[0m] Performing gene function prediction for original genome annotations, please wait ...')
     os.mkdir(SynGAP_workspace_Dir + '/function')
     sp1func = SynGAP_workspace_Dir + '/function/' + str(sp1) + '2uniprot.txt'
     sp2func = SynGAP_workspace_Dir + '/function/' + str(sp2) + '2uniprot.txt'
@@ -293,28 +286,38 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
                     sp1modgff_I, sp1modgff_IIa, sp1modgff_IIb, sp1modgff_III)
     gffgrep.gffgrep(sp2modgff_R, sp1id_I, sp1id_IIa, sp1id_IIb, sp1id_III,
                     sp2modgff_I, sp2modgff_IIa, sp2modgff_IIb, sp2modgff_III)
-    sp1modgff_miss_annotated_I = SynGAP_workspace_Dir + '/cluster/' + str(sp1) + '.modified.filtered.R.miss_annotated.I.gff'
-    sp1modgff_mis_annotated_I = SynGAP_workspace_Dir + '/cluster/' + str(sp1) + '.modified.filtered.R.mis_annotated.I.gff'
+    sp1modgff_miss_annotated_I = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp1) + '.modified.filtered.R.miss_annotated.I.gff'
+    sp1modgff_mis_annotated_I = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp1) + '.modified.filtered.R.mis_annotated.I.gff'
     sp1modgff_miss_annotated_III = SynGAP_workspace_Dir + '/cluster/' + str(
         sp1) + '.modified.filtered.R.miss_annotated.III.gff'
-    sp1modgff_mis_annotated_III = SynGAP_workspace_Dir + '/cluster/' + str(sp1) + '.modified.filtered.R.mis_annotated.III.gff'
+    sp1modgff_mis_annotated_III = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp1) + '.modified.filtered.R.mis_annotated.III.gff'
     sp1modgff_miss_annotated_IIa = SynGAP_workspace_Dir + '/cluster/' + str(
         sp1) + '.modified.filtered.R.miss_annotated.IIa.gff'
-    sp1modgff_mis_annotated_IIa = SynGAP_workspace_Dir + '/cluster/' + str(sp1) + '.modified.filtered.R.mis_annotated.IIa.gff'
+    sp1modgff_mis_annotated_IIa = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp1) + '.modified.filtered.R.mis_annotated.IIa.gff'
     sp1modgff_miss_annotated_IIb = SynGAP_workspace_Dir + '/cluster/' + str(
         sp1) + '.modified.filtered.R.miss_annotated.IIb.gff'
-    sp1modgff_mis_annotated_IIb = SynGAP_workspace_Dir + '/cluster/' + str(sp1) + '.modified.filtered.R.mis_annotated.IIb.gff'
-    sp2modgff_miss_annotated_I = SynGAP_workspace_Dir + '/cluster/' + str(sp2) + '.modified.filtered.R.miss_annotated.I.gff'
-    sp2modgff_mis_annotated_I = SynGAP_workspace_Dir + '/cluster/' + str(sp2) + '.modified.filtered.R.mis_annotated.I.gff'
+    sp1modgff_mis_annotated_IIb = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp1) + '.modified.filtered.R.mis_annotated.IIb.gff'
+    sp2modgff_miss_annotated_I = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp2) + '.modified.filtered.R.miss_annotated.I.gff'
+    sp2modgff_mis_annotated_I = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp2) + '.modified.filtered.R.mis_annotated.I.gff'
     sp2modgff_miss_annotated_III = SynGAP_workspace_Dir + '/cluster/' + str(
         sp2) + '.modified.filtered.R.miss_annotated.III.gff'
-    sp2modgff_mis_annotated_III = SynGAP_workspace_Dir + '/cluster/' + str(sp2) + '.modified.filtered.R.mis_annotated.III.gff'
+    sp2modgff_mis_annotated_III = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp2) + '.modified.filtered.R.mis_annotated.III.gff'
     sp2modgff_miss_annotated_IIa = SynGAP_workspace_Dir + '/cluster/' + str(
         sp2) + '.modified.filtered.R.miss_annotated.IIa.gff'
-    sp2modgff_mis_annotated_IIa = SynGAP_workspace_Dir + '/cluster/' + str(sp2) + '.modified.filtered.R.mis_annotated.IIa.gff'
+    sp2modgff_mis_annotated_IIa = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp2) + '.modified.filtered.R.mis_annotated.IIa.gff'
     sp2modgff_miss_annotated_IIb = SynGAP_workspace_Dir + '/cluster/' + str(
         sp2) + '.modified.filtered.R.miss_annotated.IIb.gff'
-    sp2modgff_mis_annotated_IIb = SynGAP_workspace_Dir + '/cluster/' + str(sp2) + '.modified.filtered.R.mis_annotated.IIb.gff'
+    sp2modgff_mis_annotated_IIb = SynGAP_workspace_Dir + '/cluster/' + str(
+        sp2) + '.modified.filtered.R.mis_annotated.IIb.gff'
     polishtypescan.polishtypescan(sp1modgff_I, sp1modgff_miss_annotated_I, sp1modgff_mis_annotated_I)
     polishtypescan.polishtypescan(sp1modgff_III, sp1modgff_miss_annotated_III, sp1modgff_mis_annotated_III)
     polishtypescan.polishtypescan(sp1modgff_IIa, sp1modgff_miss_annotated_IIa, sp1modgff_mis_annotated_IIa)
@@ -332,34 +335,34 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
     sp2GAPcleanmiss_annotatedgff = SynGAP_results_Dir + '/' + str(sp2) + '.SynGAP.clean.miss_annotated.gff3'
     sp2GAPcleanmis_annotatedgff = SynGAP_results_Dir + '/' + str(sp2) + '.SynGAP.clean.mis_annotated.gff3'
     os.chdir(SynGAP_results_Dir)
-    os.system('ln -s ' + sp1modgff_I + ' ' + sp1GAPcleangff)
-    os.system('ln -s ' + sp2modgff_I + ' ' + sp2GAPcleangff)
-    os.system('ln -s ' + sp1modgff_miss_annotated_I + ' ' + sp1GAPcleanmiss_annotatedgff)
-    os.system('ln -s ' + sp1modgff_mis_annotated_I + ' ' + sp1GAPcleanmis_annotatedgff)
-    os.system('ln -s ' + sp2modgff_miss_annotated_I + ' ' + sp2GAPcleanmiss_annotatedgff)
-    os.system('ln -s ' + sp2modgff_mis_annotated_I + ' ' + sp2GAPcleanmis_annotatedgff)
+    os.symlink(sp1modgff_I, sp1GAPcleangff)
+    os.symlink(sp2modgff_I, sp2GAPcleangff)
+    os.symlink(sp1modgff_miss_annotated_I, sp1GAPcleanmiss_annotatedgff)
+    os.symlink(sp1modgff_mis_annotated_I, sp1GAPcleanmis_annotatedgff)
+    os.symlink(sp2modgff_miss_annotated_I, sp2GAPcleanmiss_annotatedgff)
+    os.symlink(sp2modgff_mis_annotated_I, sp2GAPcleanmis_annotatedgff)
     os.system('cat ' + sp1gff + ' ' + sp1modgff_I + ' > ' + sp1GAPgff)
     os.system('cat ' + sp2gff + ' ' + sp2modgff_I + ' > ' + sp2GAPgff)
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
 
-    # Perform MCScan for species1 and species2 after SynGAP
-    print('[\033[0;36mINFO\033[0m] Performing MCScan for \033[0;35m' + str(sp1) + '\033[0m '
-          'and \033[0;35m' + str(sp2) + '\033[0m after SynGAP, please wait ...')
+    # Perform jcvi for species1 and species2 after SynGAP
+    print('[\033[0;36mINFO\033[0m] Performing jcvi for \033[0;35m' + str(sp1) +
+          '\033[0m and \033[0;35m' + str(sp2) + '\033[0m after SynGAP, please wait ...')
     print('[\033[0;36mINFO\033[0m] Preparing files ...')
-    mcscanafterSynGAP_Dir = SynGAP_workspace_Dir + '/mcscanafterSynGAP'
-    os.mkdir(mcscanafterSynGAP_Dir)
-    sp1GAPbed = mcscanafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.bed'
-    sp2GAPbed = mcscanafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.bed'
-    sp1GAPpriid = mcscanafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.primary.id'
-    sp2GAPpriid = mcscanafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.primary.id'
-    sp1GAPcds = mcscanafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.cds'
-    sp2GAPcds = mcscanafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.cds'
-    sp1GAPpep = mcscanafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.pep'
-    sp2GAPpep = mcscanafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.pep'
-    sp1GAPpricds = mcscanafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.primary.cds'
-    sp2GAPpricds = mcscanafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.primary.cds'
-    sp1GAPpripep = mcscanafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.primary.pep'
-    sp2GAPpripep = mcscanafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.primary.pep'
+    jcviafterSynGAP_Dir = SynGAP_workspace_Dir + '/jcviafterSynGAP'
+    os.mkdir(jcviafterSynGAP_Dir)
+    sp1GAPbed = jcviafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.bed'
+    sp2GAPbed = jcviafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.bed'
+    sp1GAPpriid = jcviafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.primary.id'
+    sp2GAPpriid = jcviafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.primary.id'
+    sp1GAPcds = jcviafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.cds'
+    sp2GAPcds = jcviafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.cds'
+    sp1GAPpep = jcviafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.pep'
+    sp2GAPpep = jcviafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.pep'
+    sp1GAPpricds = jcviafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.primary.cds'
+    sp2GAPpricds = jcviafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.primary.cds'
+    sp1GAPpripep = jcviafterSynGAP_Dir + '/' + str(sp1) + '.SynGAP.primary.pep'
+    sp2GAPpripep = jcviafterSynGAP_Dir + '/' + str(sp2) + '.SynGAP.primary.pep'
     os.system('python -m jcvi.formats.gff bed --type=' + str(annoType1) +
               ' --key=' + str(annoKey1) + ' --parent_key=' + str(annoparentKey1) +
               ' --primary_only ' + sp1GAPgff + ' -o ' + sp1GAPbed)
@@ -376,61 +379,55 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
     os.system('seqkit grep -f ' + sp2GAPpriid + ' ' + sp2GAPcds + ' > ' + sp2GAPpricds)
     os.system('gffread ' + sp2GAPgff + ' -g ' + sp2fa + ' -y ' + sp2GAPpep + ' -S')
     os.system('seqkit grep -f ' + sp2GAPpriid + ' ' + sp2GAPpep + ' > ' + sp2GAPpripep)
+    global jcviafterSynGAPDir
     if str(datatype) == 'nucl':
-        mcscan_type = 'mcscan_cds'
-        os.mkdir(mcscanafterSynGAP_Dir + '/' + mcscan_type)
-        os.system(
-            'ln -s ' + sp1GAPpricds + ' ' + mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(sp1) + '.cds')
-        os.system(
-            'ln -s ' + sp1GAPbed + ' ' + mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(sp1) + '.bed')
-        os.system(
-            'ln -s ' + sp2GAPpricds + ' ' + mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(sp2) + '.cds')
-        os.system(
-            'ln -s ' + sp2GAPbed + ' ' + mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(sp2) + '.bed')
+        jcvi_type = 'jcvi_cds'
+        jcviafterSynGAPDir = jcviafterSynGAP_Dir + '/' + jcvi_type
+        os.mkdir(jcviafterSynGAPDir)
+        os.symlink(sp1GAPpricds, jcviafterSynGAPDir + '/' + str(sp1) + '.cds')
+        os.symlink(sp1GAPbed, jcviafterSynGAPDir + '/' + str(sp1) + '.bed')
+        os.symlink(sp2GAPpricds, jcviafterSynGAPDir + '/' + str(sp2) + '.cds')
+        os.symlink(sp2GAPbed, jcviafterSynGAPDir + '/' + str(sp2) + '.bed')
     elif str(datatype) == 'prot':
-        mcscan_type = 'mcscan_pep'
-        os.mkdir(mcscanafterSynGAP_Dir + '/' + mcscan_type)
-        os.system(
-            'ln -s ' + sp1GAPpripep + ' ' + mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(sp1) + '.pep')
-        os.system(
-            'ln -s ' + sp1GAPbed + ' ' + mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(sp1) + '.bed')
-        os.system(
-            'ln -s ' + sp2GAPpripep + ' ' + mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(sp2) + '.pep')
-        os.system(
-            'ln -s ' + sp2GAPbed + ' ' + mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(sp2) + '.bed')
-    os.chdir(mcscanafterSynGAP_Dir + '/' + mcscan_type)
+        jcvi_type = 'jcvi_pep'
+        jcviafterSynGAPDir = jcviafterSynGAP_Dir + '/' + jcvi_type
+        os.mkdir(jcviafterSynGAPDir)
+        os.symlink(sp1GAPpripep, jcviafterSynGAPDir + '/' + str(sp1) + '.pep')
+        os.symlink(sp1GAPbed, jcviafterSynGAPDir + '/' + str(sp1) + '.bed')
+        os.symlink(sp2GAPpripep, jcviafterSynGAPDir + '/' + str(sp2) + '.pep')
+        os.symlink(sp2GAPbed, jcviafterSynGAPDir + '/' + str(sp2) + '.bed')
+    os.chdir(jcviafterSynGAPDir)
     os.system('python -m jcvi.compara.catalog ortholog ' + str(sp1) + ' ' + str(sp2) +
-                     ' --dbtype=' + str(datatype) + ' --cscore='  + str(cscore) + ' --cpus=' +
-                     str(threads) + ' --no_strip_names --notex')
-    print('\n[\033[0;36mINFO\033[0m] MCScan for \033[0;35m' + str(sp1) + '\033[0m '
-          'and \033[0;35m' + str(sp2) + '\033[0m after SynGAP Done!\n')
+              ' --dbtype=' + str(datatype) + ' --cscore=' + str(cscore) + ' --cpus=' +
+              str(threads) + ' --no_strip_names --notex')
+    print('\n[\033[0;36mINFO\033[0m] jcvi for \033[0;35m' + str(sp1) +
+          '\033[0m and \033[0;35m' + str(sp2) + '\033[0m after SynGAP Done!\n')
 
-    # Extract syntenic gene pairs from MCScan results for species1 and species2 after SynGAP
-    anchors_GAP = mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(
+    # Extract syntenic gene pairs from jcvi results for species1 and species2 after SynGAP
+    anchors_GAP = jcviafterSynGAP_Dir + '/' + jcvi_type + '/' + str(
         sp1) + '.' + str(sp2) + '.anchors'
-    Sgenepairs_GAP = mcscanafterSynGAP_Dir + '/' + mcscan_type + '/' + str(
+    Sgenepairs_GAP = jcviafterSynGAP_Dir + '/' + jcvi_type + '/' + str(
         sp1) + '.' + str(sp2) + '.anchors.SynGAP.genepairs'
-    print('[\033[0;36mINFO\033[0m] Extracting syntenic gene pairs from MCScan results for '
-          '\033[0;35m' + str(sp1) + '\033[0m and \033[0;35m' + str(sp2) + '\033[0m '
-          'after SynGAP, please wait ...')
+    print('[\033[0;36mINFO\033[0m] Extracting syntenic gene pairs from jcvi results for '
+          '\033[0;35m' + str(sp1) + '\033[0m and \033[0;35m' + str(sp2) + '\033[0m after SynGAP, please wait ...')
     getgenepairs.get_genepair(anchors_GAP, Sgenepairs_GAP)
     os.chdir(SynGAP_results_Dir)
-    os.system('ln -s ' + Sgenepairs_GAP)
+    os.symlink(Sgenepairs_GAP, str(sp1) + '.' + str(sp2) + '.anchors.SynGAP.genepairs')
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
 
     # Finished message
-    print('[\033[0;36mINFO\033[0m] SynGAP analysis for \033[0;35m' + str(sp1) + '\033[0m '
-          'and \033[0;35m' + str(sp2) +'\033[0m Done!')
+    print('[\033[0;36mINFO\033[0m] SynGAP analysis for \033[0;35m' + str(sp1) +
+          '\033[0m and \033[0;35m' + str(sp2) + '\033[0m Done!')
     print('[\033[0;36mINFO\033[0m] Please check the result files in `\033[0;35m' + SynGAP_results_Dir + '\033[0m`\n')
     os.chdir(workDir)
-    return(SynGAP_results_Dir)
+    return SynGAP_results_Dir
 
 
 if __name__ == '__main__':
     sp1fa = sys.argv[1]
     sp1gff = sys.argv[2]
     sp2fa = sys.argv[3]
-    sp2gff  = sys.argv[4]
+    sp2gff = sys.argv[4]
     sp1 = sys.argv[5]
     sp2 = sys.argv[6]
     annoType1 = sys.argv[7]

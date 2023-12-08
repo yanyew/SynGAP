@@ -18,7 +18,7 @@ def dict_map(in_map):
 
 
 def nameback(infile, sp1mRNAmap, sp2mRNAmap, outfile):
-    inf= open(infile, 'r')
+    inf = open(infile, 'r')
     outf = open(outfile, 'w')
     print('[\033[0;36mINFO\033[0m] Load file `\033[0;35m' + infile + '\033[0m`')
     print('[\033[0;36mINFO\033[0m] Load file `' + sp1mRNAmap + '`')

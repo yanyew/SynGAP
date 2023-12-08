@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from kneed import KneeLocator
 
 
@@ -25,7 +25,7 @@ def EVIplot(args):
     ax.spines['top'].set_color('none')
     plt.xticks(fontsize=int(args.fontsize))
     plt.yticks(ticks, fontsize=int(args.fontsize))
-    plt.scatter(xbg, ybg, s = int(args.fontsize) * 1.4, c="LightGrey")
+    plt.scatter(xbg, ybg, s=int(args.fontsize) * 1.4, c="LightGrey")
     plt.xlabel('Rank', fontsize=int(args.fontsize) * 1.4, labelpad=int(args.fontsize))
     plt.ylabel('EVI', fontsize=int(args.fontsize) * 1.4, labelpad=int(args.fontsize))
     f1 = np.polyfit(xbg, ybg, 10)
@@ -40,10 +40,10 @@ def EVIplot(args):
         highlight_id = pd.read_csv(args.highlightid, sep="\t", header=0)
         for i in highlight_id['GeneID1']:
             hl_point = df.loc[df['GeneID1'] == i]
-            y=hl_point['EVI']
-            x=hl_point['Rank']
+            y = hl_point['EVI']
+            x = hl_point['Rank']
             label = str(highlight_id.loc[highlight_id['GeneID1'] == i]['Label']).strip().split()[1]
-            plt.scatter(x, y, s = int(args.fontsize) * 1.4, c = args.highlightcolor)
+            plt.scatter(x, y, s=int(args.fontsize) * 1.4, c=args.highlightcolor)
             if label != 'NaN':
                 plt.text(x + int(args.fontsize) * 30, y, label, fontsize=int(args.fontsize) * 1.4)
     plt.savefig(args.outgraph)

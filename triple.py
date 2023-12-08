@@ -1,8 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
-import os
 import datetime
-from scripts import SynGAP_genblastg, SynGAP_miniprot, redundantfilter
+import os
+
+from scripts import SynGAP_genblastg, SynGAP_miniprot, redundantfilter, polishtypescan
 
 
 def triple(args):
@@ -85,32 +86,35 @@ def triple(args):
             args.annoType3, args.annoKey3, args.annoparentKey3,
             args.datatype, args.cscore, args.threads, args.kmer1, args.kmer2, args.outs, args.intron
         )
-    sp1modgff_c1_round1 = sp1_sp2_round1_resultDir + '/' + str(args.sp1) + '.modified.filtered.R.clusterd.gff'
-    sp1modgff_c2_round1 = sp1_sp3_round1_resultDir + '/' + str(args.sp1) + '.modified.filtered.R.clusterd.gff'
-    sp2modgff_c1_round1 = sp1_sp2_round1_resultDir + '/' + str(args.sp2) + '.modified.filtered.R.clusterd.gff'
-    sp2modgff_c2_round1 = sp2_sp3_round1_resultDir + '/' + str(args.sp2) + '.modified.filtered.R.clusterd.gff'
-    sp3modgff_c1_round1 = sp1_sp3_round1_resultDir + '/' + str(args.sp3) + '.modified.filtered.R.clusterd.gff'
-    sp3modgff_c2_round1 = sp2_sp3_round1_resultDir + '/' + str(args.sp3) + '.modified.filtered.R.clusterd.gff'
-    sp1modgff_c_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp1) + '.SynGAPround1.c.gff'
-    sp2modgff_c_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp2) + '.SynGAPround1.c.gff'
-    sp3modgff_c_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp3) + '.SynGAPround1.c.gff'
+    sp1modgff_c1_round1 = sp1_sp2_round1_resultDir + '/' + str(args.sp1) + '.SynGAP.clean.gff3'
+    sp1modgff_c2_round1 = sp1_sp3_round1_resultDir + '/' + str(args.sp1) + '.SynGAP.clean.gff3'
+    sp2modgff_c1_round1 = sp1_sp2_round1_resultDir + '/' + str(args.sp2) + '.SynGAP.clean.gff3'
+    sp2modgff_c2_round1 = sp2_sp3_round1_resultDir + '/' + str(args.sp2) + '.SynGAP.clean.gff3'
+    sp3modgff_c1_round1 = sp1_sp3_round1_resultDir + '/' + str(args.sp3) + '.SynGAP.clean.gff3'
+    sp3modgff_c2_round1 = sp2_sp3_round1_resultDir + '/' + str(args.sp3) + '.SynGAP.clean.gff3'
+    sp1modgff_c_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp1) + '.SynGAP.round1.combined.gff3'
+    sp2modgff_c_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp2) + '.SynGAP.round1.combined.gff3'
+    sp3modgff_c_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp3) + '.SynGAP.round1.combined.gff3'
     os.system('cat ' + sp1modgff_c1_round1 + ' ' + sp1modgff_c2_round1 + ' > ' + sp1modgff_c_round1)
     os.system('cat ' + sp2modgff_c1_round1 + ' ' + sp2modgff_c2_round1 + ' > ' + sp2modgff_c_round1)
     os.system('cat ' + sp3modgff_c1_round1 + ' ' + sp3modgff_c2_round1 + ' > ' + sp3modgff_c_round1)
 
     # Filter out the modified annotations that are redundant and overlapping with the annotations from genome .gff3
-    sp1modbed_round1 = SynGAP_triple_round1Dir + '/filter/' + str(args.sp1) + '.SynGAPround1.c.bed'
-    sp2modbed_round1 = SynGAP_triple_round1Dir + '/filter/' + str(args.sp2) + '.SynGAPround1.c.bed'
-    sp3modbed_round1 = SynGAP_triple_round1Dir + '/filter/' + str(args.sp3) + '.SynGAPround1.c.bed'
+    sp1modbed_round1 = SynGAP_triple_round1Dir + '/filter/' + str(args.sp1) + '.SynGAP.round1.combined.bed'
+    sp2modbed_round1 = SynGAP_triple_round1Dir + '/filter/' + str(args.sp2) + '.SynGAP.round1.combined.bed'
+    sp3modbed_round1 = SynGAP_triple_round1Dir + '/filter/' + str(args.sp3) + '.SynGAP.round1.combined.bed'
     sp1modgff_disredundant_round1 = SynGAP_triple_round1Dir + '/filter/' + str(
-        args.sp1) + '.SynGAPround1.I.disredundant.gff'
+        args.sp1) + '.SynGAP.round1.combined.disredundant.gff3'
     sp2modgff_disredundant_round1 = SynGAP_triple_round1Dir + '/filter/' + str(
-        args.sp2) + '.SynGAPround1.I.disredundant.gff'
+        args.sp2) + '.SynGAP.round1.combined.disredundant.gff3'
     sp3modgff_disredundant_round1 = SynGAP_triple_round1Dir + '/filter/' + str(
-        args.sp3) + '.SynGAPround1.I.disredundant.gff'
-    sp1modgff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp1) + '.SynGAPround1.gff'
-    sp2modgff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp2) + '.SynGAPround1.gff'
-    sp3modgff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp3) + '.SynGAPround1.gff'
+        args.sp3) + '.SynGAP.round1.combined.disredundant.gff3'
+    sp1cleangff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp1) + '.SynGAP.round1.clean.gff3'
+    sp2cleangff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp2) + '.SynGAP.round1.clean.gff3'
+    sp3cleangff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp3) + '.SynGAP.round1.clean.gff3'
+    sp1GAPgff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp1) + '.SynGAP.round1.gff3'
+    sp2GAPgff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp2) + '.SynGAP.round1.gff3'
+    sp3GAPgff_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp3) + '.SynGAP.round1.gff3'
     print('[\033[0;36mINFO\033[0m] Filtering out the redundant modified annotations, please wait ...')
     os.mkdir(SynGAP_triple_round1Dir + '/filter')
     os.system(
@@ -125,15 +129,61 @@ def triple(args):
     print('[\033[0;36mINFO\033[0m] Running Done!')
     redundantfilter.redundantfilter(sp3modgff_c_round1, sp3modbed_round1, sp3modgff_disredundant_round1)
     print('[\033[0;36mINFO\033[0m] Running Done!')
-    os.system('cat ' + sp1gff_round1 + ' ' + sp1modgff_disredundant_round1 + ' > ' + sp1modgff_round1)
-    os.system('cat ' + sp2gff_round1 + ' ' + sp2modgff_disredundant_round1 + ' > ' + sp2modgff_round1)
-    os.system('cat ' + sp3gff_round1 + ' ' + sp3modgff_disredundant_round1 + ' > ' + sp3modgff_round1)
-    sp1modgff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp1) + '.SynGAPround1.gff'
-    sp2modgff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp2) + '.SynGAPround1.gff'
-    sp3modgff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp3) + '.SynGAPround1.gff'
-    os.system('ln -s ' + sp1modgff_round1 + ' ' + sp1modgff_SynGAPround1)
-    os.system('ln -s ' + sp2modgff_round1 + ' ' + sp2modgff_SynGAPround1)
-    os.system('ln -s ' + sp3modgff_round1 + ' ' + sp3modgff_SynGAPround1)
+    os.system('ln -s ' + sp1modgff_disredundant_round1 + ' ' + sp1cleangff_round1)
+    os.system('ln -s ' + sp2modgff_disredundant_round1 + ' ' + sp2cleangff_round1)
+    os.system('ln -s ' + sp3modgff_disredundant_round1 + ' ' + sp3cleangff_round1)
+
+    sp1cleangff_miss_annotated_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp1) + \
+                                        '.SynGAP.round1.clean.miss_annotated.gff3'
+    sp1cleangff_mis_annotated_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp1) + \
+                                       '.SynGAP.round1.clean.mis_annotated.gff3'
+    sp2cleangff_miss_annotated_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp2) + \
+                                        '.SynGAP.round1.clean.miss_annotated.gff3'
+    sp2cleangff_mis_annotated_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp2) + \
+                                       '.SynGAP.round1.clean.mis_annotated.gff3'
+    sp3cleangff_miss_annotated_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp3) + \
+                                        '.SynGAP.round1.clean.miss_annotated.gff3'
+    sp3cleangff_mis_annotated_round1 = SynGAP_triple_round1Dir + '/' + str(args.sp3) + \
+                                       '.SynGAP.round1.clean.mis_annotated.gff3'
+    polishtypescan.polishtypescan(sp1cleangff_round1, sp1cleangff_miss_annotated_round1,
+                                  sp1cleangff_mis_annotated_round1)
+    polishtypescan.polishtypescan(sp2cleangff_round1, sp2cleangff_miss_annotated_round1,
+                                  sp2cleangff_mis_annotated_round1)
+    polishtypescan.polishtypescan(sp3cleangff_round1, sp3cleangff_miss_annotated_round1,
+                                  sp3cleangff_mis_annotated_round1)
+    os.system('cat ' + sp1gff_round1 + ' ' + sp1cleangff_round1 + ' > ' + sp1GAPgff_round1)
+    os.system('cat ' + sp2gff_round1 + ' ' + sp2cleangff_round1 + ' > ' + sp2GAPgff_round1)
+    os.system('cat ' + sp3gff_round1 + ' ' + sp3cleangff_round1 + ' > ' + sp3GAPgff_round1)
+    sp1GAPgff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp1) + '.SynGAP.round1.gff3'
+    sp2GAPgff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp2) + '.SynGAP.round1.gff3'
+    sp3GAPgff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp3) + '.SynGAP.round1.gff3'
+    sp1cleangff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp1) + '.SynGAP.round1.clean.gff3'
+    sp2cleangff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp2) + '.SynGAP.round1.clean.gff3'
+    sp3cleangff_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp3) + '.SynGAP.round1.clean.gff3'
+    sp1cleangff_miss_annotated_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp1) + \
+                                        '.SynGAP.round1.clean.miss_annotated.gff3'
+    sp1cleangff_mis_annotated_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp1) + \
+                                       '.SynGAP.round1.clean.mis_annotated.gff3'
+    sp2cleangff_miss_annotated_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp2) + \
+                                        '.SynGAP.round1.clean.miss_annotated.gff3'
+    sp2cleangff_mis_annotated_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp2) + \
+                                       '.SynGAP.round1.clean.mis_annotated.gff3'
+    sp3cleangff_miss_annotated_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp3) + \
+                                        '.SynGAP.round1.clean.miss_annotated.gff3'
+    sp3cleangff_mis_annotated_SynGAPround1 = SynGAP_triple_results_Dir + '/' + str(args.sp3) + \
+                                       '.SynGAP.round1.clean.mis_annotated.gff3'
+    os.system('ln -s ' + sp1GAPgff_round1 + ' ' + sp1GAPgff_SynGAPround1)
+    os.system('ln -s ' + sp2GAPgff_round1 + ' ' + sp2GAPgff_SynGAPround1)
+    os.system('ln -s ' + sp3GAPgff_round1 + ' ' + sp3GAPgff_SynGAPround1)
+    os.system('ln -s ' + sp1cleangff_round1 + ' ' + sp1cleangff_SynGAPround1)
+    os.system('ln -s ' + sp2cleangff_round1 + ' ' + sp2cleangff_SynGAPround1)
+    os.system('ln -s ' + sp3cleangff_round1 + ' ' + sp3cleangff_SynGAPround1)
+    os.system('ln -s ' + sp1cleangff_miss_annotated_round1 + ' ' + sp1cleangff_miss_annotated_SynGAPround1)
+    os.system('ln -s ' + sp2cleangff_miss_annotated_round1 + ' ' + sp2cleangff_miss_annotated_SynGAPround1)
+    os.system('ln -s ' + sp3cleangff_miss_annotated_round1 + ' ' + sp3cleangff_miss_annotated_SynGAPround1)
+    os.system('ln -s ' + sp1cleangff_mis_annotated_round1 + ' ' + sp1cleangff_mis_annotated_SynGAPround1)
+    os.system('ln -s ' + sp2cleangff_mis_annotated_round1 + ' ' + sp2cleangff_mis_annotated_SynGAPround1)
+    os.system('ln -s ' + sp3cleangff_mis_annotated_round1 + ' ' + sp3cleangff_mis_annotated_SynGAPround1)
 
     # Start round 2
     os.chdir(workDir)
@@ -151,19 +201,19 @@ def triple(args):
     os.system('cp ' + str(args.sp1fa) + ' ' + sp1fa_round2)
     print('[\033[0;36mINFO\033[0m] '
           'Rename `\033[0;35m' + str(args.sp1gff) + '\033[0m` into `\033[0;35m' + sp1gff_round2 + '\033[0m`')
-    os.system('cp ' + sp1modgff_SynGAPround1 + ' ' + sp1gff_round2)
+    os.system('cp ' + sp1GAPgff_SynGAPround1 + ' ' + sp1gff_round2)
     print('[\033[0;36mINFO\033[0m] '
           'Rename `\033[0;35m' + str(args.sp2fa) + '\033[0m` into `\033[0;35m' + sp2fa_round2 + '\033[0m`')
     os.system('cp ' + str(args.sp2fa) + ' ' + sp2fa_round2)
     print('[\033[0;36mINFO\033[0m] '
           'Rename `\033[0;35m' + str(args.sp2gff) + '\033[0m` into `\033[0;35m' + sp2gff_round2 + '\033[0m`')
-    os.system('cp ' + sp2modgff_SynGAPround1 + ' ' + sp2gff_round2)
+    os.system('cp ' + sp2GAPgff_SynGAPround1 + ' ' + sp2gff_round2)
     print('[\033[0;36mINFO\033[0m] '
           'Rename `\033[0;35m' + str(args.sp3fa) + '\033[0m` into `\033[0;35m' + sp3fa_round2 + '\033[0m`')
     os.system('cp ' + str(args.sp3fa) + ' ' + sp3fa_round2)
     print('[\033[0;36mINFO\033[0m] '
           'Rename `\033[0;35m' + str(args.sp3gff) + '\033[0m` into `\033[0;35m' + sp3gff_round2 + '\033[0m`')
-    os.system('cp ' + sp3modgff_SynGAPround1 + ' ' + sp3gff_round2)
+    os.system('cp ' + sp3GAPgff_SynGAPround1 + ' ' + sp3gff_round2)
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
     os.chdir(SynGAP_triple_round2Dir)
     sp1_sp2_round2_resultDir = ''
@@ -207,32 +257,35 @@ def triple(args):
             args.annoType3, args.annoKey3, args.annoparentKey3,
             args.datatype, args.cscore, args.threads, args.kmer1, args.kmer2, args.outs, args.intron
         )
-    sp1modgff_I1_round2 = sp1_sp2_round2_resultDir + '/' + str(args.sp1) + '.modified.filtered.R.clusterd.gff'
-    sp1modgff_I2_round2 = sp1_sp3_round2_resultDir + '/' + str(args.sp1) + '.modified.filtered.R.clusterd.gff'
-    sp2modgff_c1_round2 = sp1_sp2_round2_resultDir + '/' + str(args.sp2) + '.modified.filtered.R.clusterd.gff'
-    sp2modgff_c2_round2 = sp2_sp3_round2_resultDir + '/' + str(args.sp2) + '.modified.filtered.R.clusterd.gff'
-    sp3modgff_c1_round2 = sp1_sp3_round2_resultDir + '/' + str(args.sp3) + '.modified.filtered.R.clusterd.gff'
-    sp3modgff_c2_round2 = sp2_sp3_round2_resultDir + '/' + str(args.sp3) + '.modified.filtered.R.clusterd.gff'
-    sp1modgff_c_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp1) + '.SynGAPround2.c.gff'
-    sp2modgff_c_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp2) + '.SynGAPround2.c.gff'
-    sp3modgff_c_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp3) + '.SynGAPround2.c.gff'
-    os.system('cat ' + sp1modgff_I1_round2 + ' ' + sp1modgff_I2_round2 + ' > ' + sp1modgff_c_round2)
+    sp1modgff_c1_round2 = sp1_sp2_round2_resultDir + '/' + str(args.sp1) + '.SynGAP.clean.gff3'
+    sp1modgff_c2_round2 = sp1_sp3_round2_resultDir + '/' + str(args.sp1) + '.SynGAP.clean.gff3'
+    sp2modgff_c1_round2 = sp1_sp2_round2_resultDir + '/' + str(args.sp2) + '.SynGAP.clean.gff3'
+    sp2modgff_c2_round2 = sp2_sp3_round2_resultDir + '/' + str(args.sp2) + '.SynGAP.clean.gff3'
+    sp3modgff_c1_round2 = sp1_sp3_round2_resultDir + '/' + str(args.sp3) + '.SynGAP.clean.gff3'
+    sp3modgff_c2_round2 = sp2_sp3_round2_resultDir + '/' + str(args.sp3) + '.SynGAP.clean.gff3'
+    sp1modgff_c_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp1) + '.SynGAP.round2.combined.gff3'
+    sp2modgff_c_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp2) + '.SynGAP.round2.combined.gff3'
+    sp3modgff_c_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp3) + '.SynGAP.round2.combined.gff3'
+    os.system('cat ' + sp1modgff_c1_round2 + ' ' + sp1modgff_c2_round2 + ' > ' + sp1modgff_c_round2)
     os.system('cat ' + sp2modgff_c1_round2 + ' ' + sp2modgff_c2_round2 + ' > ' + sp2modgff_c_round2)
     os.system('cat ' + sp3modgff_c1_round2 + ' ' + sp3modgff_c2_round2 + ' > ' + sp3modgff_c_round2)
 
     # Filter out the modified annotations that are redundant and overlapping with the annotations from genome .gff3
-    sp1modbed_round2 = SynGAP_triple_round2Dir + '/filter/' + str(args.sp1) + '.SynGAPround2.c.bed'
-    sp2modbed_round2 = SynGAP_triple_round2Dir + '/filter/' + str(args.sp2) + '.SynGAPround2.c.bed'
-    sp3modbed_round2 = SynGAP_triple_round2Dir + '/filter/' + str(args.sp3) + '.SynGAPround2.c.bed'
+    sp1modbed_round2 = SynGAP_triple_round2Dir + '/filter/' + str(args.sp1) + '.SynGAP.round2.combined.bed'
+    sp2modbed_round2 = SynGAP_triple_round2Dir + '/filter/' + str(args.sp2) + '.SynGAP.round2.combined.bed'
+    sp3modbed_round2 = SynGAP_triple_round2Dir + '/filter/' + str(args.sp3) + '.SynGAP.round2.combined.bed'
     sp1modgff_disredundant_round2 = SynGAP_triple_round2Dir + '/filter/' + str(
-        args.sp1) + '.SynGAPround2.I.disredundant.gff'
+        args.sp1) + '.SynGAP.round2.combined.disredundant.gff3'
     sp2modgff_disredundant_round2 = SynGAP_triple_round2Dir + '/filter/' + str(
-        args.sp2) + '.SynGAPround2.I.disredundant.gff'
+        args.sp2) + '.SynGAP.round2.combined.disredundant.gff3'
     sp3modgff_disredundant_round2 = SynGAP_triple_round2Dir + '/filter/' + str(
-        args.sp3) + '.SynGAPround2.I.disredundant.gff'
-    sp1modgff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp1) + '.SynGAPround2.gff'
-    sp2modgff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp2) + '.SynGAPround2.gff'
-    sp3modgff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp3) + '.SynGAPround2.gff'
+        args.sp3) + '.SynGAP.round2.combined.disredundant.gff3'
+    sp1cleangff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp1) + '.SynGAP.round2.clean.gff3'
+    sp2cleangff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp2) + '.SynGAP.round2.clean.gff3'
+    sp3cleangff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp3) + '.SynGAP.round2.clean.gff3'
+    sp1GAPgff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp1) + '.SynGAP.round2.gff3'
+    sp2GAPgff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp2) + '.SynGAP.round2.gff3'
+    sp3GAPgff_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp3) + '.SynGAP.round2.gff3'
     print('[\033[0;36mINFO\033[0m] Filtering out the redundant modified annotations, please wait ...')
     os.mkdir(SynGAP_triple_round2Dir + '/filter')
     os.system(
@@ -247,16 +300,64 @@ def triple(args):
     print('[\033[0;36mINFO\033[0m] Running Done!')
     redundantfilter.redundantfilter(sp3modgff_c_round2, sp3modbed_round2, sp3modgff_disredundant_round2)
     print('[\033[0;36mINFO\033[0m] Running Done!')
-    os.system('cat ' + sp1gff_round2 + ' ' + sp1modgff_disredundant_round2 + ' > ' + sp1modgff_round2)
-    os.system('cat ' + sp2gff_round2 + ' ' + sp2modgff_disredundant_round2 + ' > ' + sp2modgff_round2)
-    os.system('cat ' + sp3gff_round2 + ' ' + sp3modgff_disredundant_round2 + ' > ' + sp3modgff_round2)
-    sp1modgff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp1) + '.SynGAPtriple.gff'
-    sp2modgff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp2) + '.SynGAPtriple.gff'
-    sp3modgff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp3) + '.SynGAPtriple.gff'
-    os.system('ln -s ' + sp1modgff_round2 + ' ' + sp1modgff_SynGAPtriple)
-    os.system('ln -s ' + sp2modgff_round2 + ' ' + sp2modgff_SynGAPtriple)
-    os.system('ln -s ' + sp3modgff_round2 + ' ' + sp3modgff_SynGAPtriple)
+    os.system('ln -s ' + sp1modgff_disredundant_round2 + ' ' + sp1cleangff_round2)
+    os.system('ln -s ' + sp2modgff_disredundant_round2 + ' ' + sp2cleangff_round2)
+    os.system('ln -s ' + sp3modgff_disredundant_round2 + ' ' + sp3cleangff_round2)
+    sp1cleangff_miss_annotated_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp1) + \
+                                        '.SynGAP.round2.clean.miss_annotated.gff3'
+    sp1cleangff_mis_annotated_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp1) + \
+                                       '.SynGAP.round2.clean.mis_annotated.gff3'
+    sp2cleangff_miss_annotated_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp2) + \
+                                        '.SynGAP.round2.clean.miss_annotated.gff3'
+    sp2cleangff_mis_annotated_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp2) + \
+                                       '.SynGAP.round2.clean.mis_annotated.gff3'
+    sp3cleangff_miss_annotated_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp3) + \
+                                        '.SynGAP.round2.clean.miss_annotated.gff3'
+    sp3cleangff_mis_annotated_round2 = SynGAP_triple_round2Dir + '/' + str(args.sp3) + \
+                                       '.SynGAP.round2.clean.mis_annotated.gff3'
+    polishtypescan.polishtypescan(sp1cleangff_round2, sp1cleangff_miss_annotated_round2,
+                                  sp1cleangff_mis_annotated_round2)
+    polishtypescan.polishtypescan(sp2cleangff_round2, sp2cleangff_miss_annotated_round2,
+                                  sp2cleangff_mis_annotated_round2)
+    polishtypescan.polishtypescan(sp3cleangff_round2, sp3cleangff_miss_annotated_round2,
+                                  sp3cleangff_mis_annotated_round2)
+    os.system('cat ' + sp1gff_round2 + ' ' + sp1cleangff_round2 + ' > ' + sp1GAPgff_round2)
+    os.system('cat ' + sp2gff_round2 + ' ' + sp2cleangff_round2 + ' > ' + sp2GAPgff_round2)
+    os.system('cat ' + sp3gff_round2 + ' ' + sp3cleangff_round2 + ' > ' + sp3GAPgff_round2)
+    sp1modgff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp1) + '.SynGAP.triple.gff3'
+    sp2modgff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp2) + '.SynGAP.triple.gff3'
+    sp3modgff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp3) + '.SynGAP.triple.gff3'
+    sp1cleangff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp1) + '.SynGAP.triple.clean.gff3'
+    sp2cleangff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp2) + '.SynGAP.triple.clean.gff3'
+    sp3cleangff_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp3) + '.SynGAP.triple.clean.gff3'
+    sp1cleangff_miss_annotated_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp1) + \
+                                              '.SynGAP.triple.clean.miss_annotated.gff3'
+    sp1cleangff_mis_annotated_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp1) + \
+                                             '.SynGAP.triple.clean.mis_annotated.gff3'
+    sp2cleangff_miss_annotated_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp2) + \
+                                              '.SynGAP.triple.clean.miss_annotated.gff3'
+    sp2cleangff_mis_annotated_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp2) + \
+                                             '.SynGAP.triple.clean.mis_annotated.gff3'
+    sp3cleangff_miss_annotated_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp3) + \
+                                              '.SynGAP.triple.clean.miss_annotated.gff3'
+    sp3cleangff_mis_annotated_SynGAPtriple = SynGAP_triple_results_Dir + '/' + str(args.sp3) + \
+                                             '.SynGAP.triple.clean.mis_annotated.gff3'
+    os.system('ln -s ' + sp1GAPgff_round2 + ' ' + sp1modgff_SynGAPtriple)
+    os.system('ln -s ' + sp2GAPgff_round2 + ' ' + sp2modgff_SynGAPtriple)
+    os.system('ln -s ' + sp3GAPgff_round2 + ' ' + sp3modgff_SynGAPtriple)
+    os.system('cat ' + sp1cleangff_round1 + ' ' + sp1cleangff_round2 + ' > ' + sp1cleangff_SynGAPtriple)
+    os.system('cat ' + sp2cleangff_round1 + ' ' + sp2cleangff_round2 + ' > ' + sp2cleangff_SynGAPtriple)
+    os.system('cat ' + sp3cleangff_round1 + ' ' + sp3cleangff_round2 + ' > ' + sp3cleangff_SynGAPtriple)
+    polishtypescan.polishtypescan(sp1cleangff_SynGAPtriple, sp1cleangff_miss_annotated_SynGAPtriple,
+                                  sp1cleangff_mis_annotated_SynGAPtriple)
+    polishtypescan.polishtypescan(sp2cleangff_SynGAPtriple, sp2cleangff_miss_annotated_SynGAPtriple,
+                                  sp2cleangff_mis_annotated_SynGAPtriple)
+    polishtypescan.polishtypescan(sp3cleangff_SynGAPtriple, sp3cleangff_miss_annotated_SynGAPtriple,
+                                  sp3cleangff_mis_annotated_SynGAPtriple)
 
     print('[\033[0;36mINFO\033[0m] SynGAP analysis for \033[0;35m' + str(args.sp1) +
           '\033[0m, \033[0;35m' + str(args.sp2) + '\033[0m and \033[0;35m' + str(args.sp3) + '\033[0m Done!')
-    print('[\033[0;36mINFO\033[0m] Please check the result files in `\033[0;35m' + SynGAP_triple_results_Dir + '\033[0m`\n')
+    print(
+        '[\033[0;36mINFO\033[0m] Please check the result files in `\033[0;35m' + SynGAP_triple_results_Dir + '\033[0m`\n')
+
+    return SynGAP_triple_results_Dir

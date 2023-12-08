@@ -113,7 +113,7 @@ def overlapfilter(genomegff, annotype, annokey, modified_gff, filtered_gff):
     print('[\033[0;36mINFO\033[0m] Load file `\033[0;35m' + genomegff + '\033[0m`')
     genome_chrid, genome_start, genome_end, genome_cdslength = dict_genomegff(genomegff, annotype, annokey)
     print('[\033[0;36mINFO\033[0m] Load file `\033[0;35m' + modified_gff + '\033[0m`')
-    gene_chrid, gene_source, gene_type, gene_start, gene_end, gene_score, gene_strand, gene_phase, gene_name,\
+    gene_chrid, gene_source, gene_type, gene_start, gene_end, gene_score, gene_strand, gene_phase, gene_name, \
     transcripts, mRNAs = dict_modifiedgff(modified_gff)
     outfgff = open(filtered_gff, 'w')
     overlap_mRNAs = []
@@ -180,30 +180,34 @@ def overlapfilter(genomegff, annotype, annokey, modified_gff, filtered_gff):
             if transcript not in genome_chrid.keys():
                 if gene_type[attributes] == 'mRNA':
                     if transcript == attributes_dict['ID']:
-                        outfgff.write(gene_chrid[attributes] + '\t' + gene_source[attributes] + '\t' + gene_type[attributes]
-                                  + '\t' + gene_start[attributes] + '\t' + gene_end[attributes] + '\t'
-                                  + gene_score[attributes] + '\t' + gene_strand[attributes] + '\t' + gene_phase[attributes]
-                                  + '\t' + attributes + ';polish_type=miss_annotated\n')
+                        outfgff.write(
+                            gene_chrid[attributes] + '\t' + gene_source[attributes] + '\t' + gene_type[attributes]
+                            + '\t' + gene_start[attributes] + '\t' + gene_end[attributes] + '\t'
+                            + gene_score[attributes] + '\t' + gene_strand[attributes] + '\t' + gene_phase[attributes]
+                            + '\t' + attributes + ';polish_type=miss_annotated\n')
                 elif gene_type[attributes] == 'CDS':
                     if transcript == attributes_dict['Parent']:
-                        outfgff.write(gene_chrid[attributes] + '\t' + gene_source[attributes] + '\t' + gene_type[attributes]
-                                  + '\t' + gene_start[attributes] + '\t' + gene_end[attributes] + '\t'
-                                  + gene_score[attributes] + '\t' + gene_strand[attributes] + '\t' + gene_phase[attributes]
-                                  + '\t' + attributes + '\n')
+                        outfgff.write(
+                            gene_chrid[attributes] + '\t' + gene_source[attributes] + '\t' + gene_type[attributes]
+                            + '\t' + gene_start[attributes] + '\t' + gene_end[attributes] + '\t'
+                            + gene_score[attributes] + '\t' + gene_strand[attributes] + '\t' + gene_phase[attributes]
+                            + '\t' + attributes + '\n')
         for mRNA in remain_overlap_mRNAs:
             if mRNA not in genome_chrid.keys():
                 if gene_type[attributes] == 'mRNA':
                     if mRNA == attributes_dict['ID']:
-                        outfgff.write(gene_chrid[attributes] + '\t' + gene_source[attributes] + '\t' + gene_type[attributes]
-                                  + '\t' + gene_start[attributes] + '\t' + gene_end[attributes] + '\t'
-                                  + gene_score[attributes] + '\t' + gene_strand[attributes] + '\t' + gene_phase[attributes]
-                                  + '\t' + attributes + ';polish_type=mis_annotated\n')
+                        outfgff.write(
+                            gene_chrid[attributes] + '\t' + gene_source[attributes] + '\t' + gene_type[attributes]
+                            + '\t' + gene_start[attributes] + '\t' + gene_end[attributes] + '\t'
+                            + gene_score[attributes] + '\t' + gene_strand[attributes] + '\t' + gene_phase[attributes]
+                            + '\t' + attributes + ';polish_type=mis_annotated\n')
                 elif gene_type[attributes] == 'CDS':
                     if mRNA == attributes_dict['Parent']:
-                        outfgff.write(gene_chrid[attributes] + '\t' + gene_source[attributes] + '\t' + gene_type[attributes]
-                                  + '\t' + gene_start[attributes] + '\t' + gene_end[attributes] + '\t'
-                                  + gene_score[attributes] + '\t' + gene_strand[attributes] + '\t' + gene_phase[attributes]
-                                  + '\t' + attributes + '\n')
+                        outfgff.write(
+                            gene_chrid[attributes] + '\t' + gene_source[attributes] + '\t' + gene_type[attributes]
+                            + '\t' + gene_start[attributes] + '\t' + gene_end[attributes] + '\t'
+                            + gene_score[attributes] + '\t' + gene_strand[attributes] + '\t' + gene_phase[attributes]
+                            + '\t' + attributes + '\n')
     outfgff.close()
 
 

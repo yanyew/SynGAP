@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
-import sys
 import os
 import re
+import sys
+
 from Bio import SeqIO
 
 
@@ -71,17 +72,17 @@ def dict_gapbed(gapbed):
 def gapseq(ingenome_sp1, ingenome_sp2, inpep_sp1, inpep_sp2, ingapbed_sp1, ingapbed_sp2):
     ingenomef_sp1 = open(ingenome_sp1, 'r')
     ingenomef_sp2 = open(ingenome_sp2, 'r')
-    print('[\033[0;36mINFO\033[0m] Load file `'  + ingenome_sp1 + '`')
+    print('[\033[0;36mINFO\033[0m] Load file `' + ingenome_sp1 + '`')
     genomeseqs_sp1 = SeqIO.to_dict(SeqIO.parse(ingenomef_sp1, 'fasta'))
-    print('[\033[0;36mINFO\033[0m] Load file `'  + ingenome_sp2 + '`')
+    print('[\033[0;36mINFO\033[0m] Load file `' + ingenome_sp2 + '`')
     genomeseqs_sp2 = SeqIO.to_dict(SeqIO.parse(ingenomef_sp2, 'fasta'))
-    print('[\033[0;36mINFO\033[0m] Load file `'  + inpep_sp1 + '`')
+    print('[\033[0;36mINFO\033[0m] Load file `' + inpep_sp1 + '`')
     pepseqs_sp1 = dict_fa(inpep_sp1)
-    print('[\033[0;36mINFO\033[0m] Load file `'  + inpep_sp2 + '`')
+    print('[\033[0;36mINFO\033[0m] Load file `' + inpep_sp2 + '`')
     pepseqs_sp2 = dict_fa(inpep_sp2)
-    print('[\033[0;36mINFO\033[0m] Load file `'  + ingapbed_sp1 + '`')
+    print('[\033[0;36mINFO\033[0m] Load file `' + ingapbed_sp1 + '`')
     gapbedsp1_list = list_gapbed(ingapbed_sp1)
-    print('[\033[0;36mINFO\033[0m] Load file `'  + ingapbed_sp2 + '`')
+    print('[\033[0;36mINFO\033[0m] Load file `' + ingapbed_sp2 + '`')
     gapbedsp2_list = list_gapbed(ingapbed_sp2)
     os.mkdir('./query')
     os.mkdir('./subject')

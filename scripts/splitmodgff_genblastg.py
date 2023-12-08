@@ -98,7 +98,7 @@ def split(sp1, sp2, ingapbed_sp1, ingapbed_sp2, inmodgff, outgff_sp1, outgff_sp2
                     if gapid in gap_chr_1:
                         attributes = attributes.replace('ID=', 'ID=' + sp1 + '_')
                         attributes = attributes.replace('Name=', 'Name=' + sp1 + '_')
-                        outfgff_sp1.write(gap_chr_1[gapid] + '\t' + source + '\t' + type + '\t' + str(
+                        outfgff_sp1.write(gap_chr_1[gapid] + '\tSynGAP\t' + type + '\t' + str(
                             int(start) + int(gap_start_1[gapid]))
                                           + '\t' + str(
                             int(end) + int(gap_start_1[gapid])) + '\t' + score + '\t' + strand + '\t' + phase
@@ -106,17 +106,17 @@ def split(sp1, sp2, ingapbed_sp1, ingapbed_sp2, inmodgff, outgff_sp1, outgff_sp2
                     elif gapid in gap_chr_2:
                         attributes = attributes.replace('ID=', 'ID=' + sp2 + '_')
                         attributes = attributes.replace('Name=', 'Name=' + sp2 + '_')
-                        outfgff_sp2.write(gap_chr_2[gapid] + '\t' + source + '\t' + type + '\t' + str(
+                        outfgff_sp2.write(gap_chr_2[gapid] + '\tSynGAP\t' + type + '\t' + str(
                             int(start) + int(gap_start_2[gapid]))
-                                             + '\t' + str(
+                                          + '\t' + str(
                             int(end) + int(gap_start_2[gapid])) + '\t' + score + '\t' + strand + '\t' + phase
-                                             + '\t' + attributes + '\n')
+                                          + '\t' + attributes + '\n')
                 elif type == 'coding_exon':
                     type = 'CDS'
                     if gapid in gap_chr_1:
                         attributes = attributes.replace('ID=', 'ID=' + sp1 + '_')
                         attributes = attributes.replace('Parent=', 'Parent=' + sp1 + '_')
-                        outfgff_sp1.write(gap_chr_1[gapid] + '\t' + source + '\t' + type + '\t' + str(
+                        outfgff_sp1.write(gap_chr_1[gapid] + '\tSynGAP\t' + type + '\t' + str(
                             int(start) + int(gap_start_1[gapid]))
                                           + '\t' + str(
                             int(end) + int(gap_start_1[gapid])) + '\t' + score + '\t' + strand + '\t' + phase
@@ -124,11 +124,11 @@ def split(sp1, sp2, ingapbed_sp1, ingapbed_sp2, inmodgff, outgff_sp1, outgff_sp2
                     elif gapid in gap_chr_2:
                         attributes = attributes.replace('ID=', 'ID=' + sp2 + '_')
                         attributes = attributes.replace('Parent=', 'Parent=' + sp2 + '_')
-                        outfgff_sp2.write(gap_chr_2[gapid] + '\t' + source + '\t' + type + '\t' + str(
+                        outfgff_sp2.write(gap_chr_2[gapid] + '\tSynGAP\t' + type + '\t' + str(
                             int(start) + int(gap_start_2[gapid]))
-                                             + '\t' + str(
+                                          + '\t' + str(
                             int(end) + int(gap_start_2[gapid])) + '\t' + score + '\t' + strand + '\t' + phase
-                                             + '\t' + attributes + '\n')
+                                          + '\t' + attributes + '\n')
     outfgff_sp1.close()
     outfgff_sp2.close()
 
