@@ -30,6 +30,32 @@ docker pull yanyew/syngap:1.1.0
 docker run -it yanyew/syngap:1.1.0
 conda activate syngap # activate the conda environment for SynGAP
 ```
+# Dependence
+```
+python >=3.10
+biopython >=1.81
+jcvi >=1.3.6
+bedtools >=2.31.0
+last >=1454
+emboss >=6.6.0
+gffread >=0.12.7
+seqkit >=2.4.0
+diamond >=2.1.8
+perl-bioperl >=1.7.8
+kneed >=0.8.3
+numpy >=1.26.0
+pandas >=2.1.1
+matplotlib-base >=3.8.0
+scikit-image >=0.22.0
+pybedtools >=0.9.0
+deap >=1.4.1
+more-itertools
+crossmap
+graphviz
+webcolors
+ortools-python
+ftpretty
+```
 # Usage
 ## genome annotations polishment
 ### _dual_
