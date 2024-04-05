@@ -163,7 +163,7 @@ SynGAP _genepair_ will generate several key output files (see below), and _*.*.f
 | *.2wayblast.genepair | the best two-way BLAST gene pairs |
 
 ### _evi_
-Base on the gene pairs between two species and the time-series transcriptome data, _evi_ calculates the _EVI_ for each gene pair.
+Base on the gene pairs between two species and the time-series transcriptome data, _evi_ calculates the _EVI_ for each gene pair. The input expression file should be a tab-delimited text file with normalized expression values, including FPKM, RPKM, and TPM (among which we recommend using TPM).
 ```
 syngap evi \
 --genepair=Can.Sly.final.genepair \
