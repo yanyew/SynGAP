@@ -14,7 +14,7 @@ If you use SynGAP, please cite:
 # Installation
 ## conda (recommended)
 ```
-conda install -c bioconda syngap
+conda install -c conda-forge -c bioconda syngap
 ```
 ## manually
 ```
