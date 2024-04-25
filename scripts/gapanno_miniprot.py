@@ -60,7 +60,7 @@ def gapanno(miniprotdir, kmer1, kmer2, outs, intron, pnumber):
         with open(file_path, 'r') as file:
             file_content = file.read()
             merged_content += file_content
-    modified_content = merged_content.replace("##gff-version 3", "").strip()
+    modified_content = merged_content.replace("##gff-version 3\n", "").strip()
     output_path = "../modified.raw.gff"
     with open(output_path, 'w') as output_file:
         output_file.write(modified_content)

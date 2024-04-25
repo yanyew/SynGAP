@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python51+
 # -*- coding:utf-8 -*-
 import datetime
 import os

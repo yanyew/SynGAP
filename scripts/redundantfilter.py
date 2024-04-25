@@ -107,8 +107,9 @@ def redundantfilter(modified_gff, modified_bed, filtered_gff):
         if len(b) > 1:
             cdslen = []
             for geneid in b:
-                cds_len = mod_cdslength[geneid]
-                cdslen.append(cds_len)
+                if geneid in mod_cdslength:
+                    cds_len = mod_cdslength[geneid]
+                    cdslen.append(cds_len)
             cdslen_max = max(cdslen)
             i = cdslen.index(cdslen_max)
             retain_genes.append(b[i])

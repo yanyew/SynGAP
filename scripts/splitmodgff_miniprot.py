@@ -39,7 +39,7 @@ def split(sp1, sp2, ingapbed_sp1, ingapbed_sp2, inmodgff, outgff_sp1, outgff_sp2
     print('[\033[0;36mINFO\033[0m] Spliting ...')
     Name = ''
     for line in lines:
-        if line[0] != '#':
+        if line[0] != '#' and len(line.split('\t')) == 9:
             type = line.split('\t')[2]
             attributes = (line.split('\t')[8]).rstrip('\n')
             attributes_list = attributes.split(';')
@@ -57,7 +57,7 @@ def split(sp1, sp2, ingapbed_sp1, ingapbed_sp2, inmodgff, outgff_sp1, outgff_sp2
                 line_alter = line.replace(Parent, Name)
                 transcript.append(line_alter)
     for line in transcript:
-        if line[0] != '#':
+        if line[0] != '#' and len(line.split('\t')) == 9:
             type = line.split('\t')[2]
             attributes = (line.split('\t')[8]).rstrip('\n')
             attributes_list = attributes.split(';')

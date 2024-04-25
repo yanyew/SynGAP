@@ -6,7 +6,7 @@ import sys
 
 from scripts import gffnameback, gapbed, getgenepairs, gffgrep, gapseq, Rlabel, redundantfilter, findnonfunc, \
     polishtypescan, splitmodgff_genblastg, nameback, gapanno_genblastg, gapfind, modalign2origin, findID, overlapfilter, \
-    gffrename
+    gffrename, blockR
 
 
 def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, annoparentKey2,
@@ -131,7 +131,7 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
           '\033[0m and \033[0;35m' + sp2 + '\033[0m Done!\n')
 
     # Find gaps from the .anchors file
-    os.chdir(workDir)
+    os.chdir(SynGAP_workspace_Dir)
     print('[\033[0;36mINFO\033[0m] Finding gaps from the .anchors file, please wait ...')
     anchors = SynGAP_workspace_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors'
     anchors_gap = SynGAP_workspace_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors.gap'
@@ -160,11 +160,21 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
     os.symlink(anchors_gap_originalid, SynGAP_results_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors.gap')
     os.symlink(Sgenepairs_originalid, SynGAP_results_Dir + '/' + str(sp1) + '.' + str(sp2) + '.anchors.genepairs')
 
+    # Calculate R value for blocks in .anchors
+    print('[\033[0;36mINFO\033[0m] Calculate R value for blocks in .anchors, please wait ...')
+    outR = SynGAP_workspace_Dir + '/' + str(sp1) + '.' + str(sp2) + '.originalid.anchors.R.xls'
+    sp1blockRbed = SynGAP_workspace_Dir + '/' + str(sp1) + '.block.bed'
+    sp2blockRbed = SynGAP_workspace_Dir + '/' + str(sp2) + '.block.bed'
+    blockR.blockR(anchors_originalid, sp1blockRbed, sp2blockRbed, sp1pripep, sp2pripep, str(threads), sp1bed, sp2bed, outR)
+
     # Extract .bed information for the gaps from .anchors.gap
     print('[\033[0;36mINFO\033[0m] Extracting .bed information for the gaps, please wait ...')
     sp1gapbed = SynGAP_workspace_Dir + '/' + str(sp1) + '.gap.bed'
     sp2gapbed = SynGAP_workspace_Dir + '/' + str(sp2) + '.gap.bed'
     gapbed.gapbed(anchors_gap, sp1bed_rename, sp2bed_rename, sp1gapbed, sp2gapbed)
+    sp1gapbed_originalid = SynGAP_workspace_Dir + '/' + str(sp1) + '.originalid.gap.bed'
+    sp2gapbed_originalid = SynGAP_workspace_Dir + '/' + str(sp2) + '.originalid.gap.bed'
+    gapbed.gapbed(anchors_gap_originalid, sp1bed, sp2bed, sp1gapbed_originalid, sp2gapbed_originalid)
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
 
     # Prepare sequences data for gap annotation
@@ -185,7 +195,7 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
 
     # Split the modified annotation file
     print('[\033[0;36mINFO\033[0m] Spliting the raw modified annotations file, please wait ...')
-    os.chdir(workDir)
+    os.chdir(SynGAP_workspace_Dir)
     modgff = SynGAP_workspace_Dir + '/' + 'modified.raw.gff'
     sp1modgff = SynGAP_workspace_Dir + '/' + str(sp1) + '.modified.raw.gff'
     sp2modgff = SynGAP_workspace_Dir + '/' + str(sp2) + '.modified.raw.gff'
@@ -264,11 +274,11 @@ def SynGAP(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoKey2, a
     print('[\033[0;36mINFO\033[0m] Running Done!')
     print('[\033[0;36mINFO\033[0m] Calculating and labeling \033[0;33mR value\033[0m '
           'for modified annotations of \033[0;35m' + str(sp1) + '\033[0m, please wait ...')
-    Rlabel.Rlabel(str(sp1), sp1modgff_filtered, sp1R, sp1modgff_R)
+    Rlabel.Rlabel(str(sp1), sp1blockRbed, sp2bed, sp2blockRbed, sp1modgff_filtered, sp1R, sp1modgff_R)
     print('[\033[0;36mINFO\033[0m] Running Done!')
     print('[\033[0;36mINFO\033[0m] Calculating and labeling \033[0;33mR value\033[0m '
           'for modified annotations of \033[0;35m' + str(sp2) + '\033[0m, please wait ...')
-    Rlabel.Rlabel(str(sp2), sp2modgff_filtered, sp2R, sp2modgff_R)
+    Rlabel.Rlabel(str(sp2), sp2blockRbed, sp1bed, sp1blockRbed, sp2modgff_filtered, sp2R, sp2modgff_R)
     print('[\033[0;36mINFO\033[0m] Running Done!\n')
 
     # Scan out the modified annotations that are not overlapped with the annotations from genome .gff3

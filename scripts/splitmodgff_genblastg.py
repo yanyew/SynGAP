@@ -38,7 +38,7 @@ def split(sp1, sp2, ingapbed_sp1, ingapbed_sp2, inmodgff, outgff_sp1, outgff_sp2
     rename = {}
     print('[\033[0;36mINFO\033[0m] Spliting ...')
     for line in lines:
-        if line[0] != '#':
+        if line[0] != '#' and len(line.split('\t')) == 9:
             type = line.split('\t')[2]
             attributes = (line.split('\t')[8]).rstrip('\n')
             if type == 'transcript':
@@ -46,7 +46,7 @@ def split(sp1, sp2, ingapbed_sp1, ingapbed_sp2, inmodgff, outgff_sp1, outgff_sp2
                 Name = (attributes.split(';')[1]).split('=')[1]
                 rename[ID] = Name
     for line in lines:
-        if line[0] != '#':
+        if line[0] != '#' and len(line.split('\t')) == 9:
             type = line.split('\t')[2]
             attributes = (line.split('\t')[8]).rstrip('\n')
             if type == 'transcript':
