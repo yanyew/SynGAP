@@ -242,32 +242,17 @@ def blockR(inf_anchors, sp1blockRbed, sp2blockRbed, infasta1, infasta2, pnumber,
             blockR_dict[block_name] = [R_dict[i]]
         elif block_name in blockR_dict:
             blockR_dict[block_name].append(R_dict[i])
-    # numf.close()
     oR.close()
     
     blockR25 = {}
     for block_name in blockR_dict:
         blockR25[block_name] = np.percentile(np.array(blockR_dict[block_name]), 25)
-    blockR25_list = list(blockR25.values())
-    blockR25_listmin = min(blockR25_list)
-
-    blockRmin = {}
-    for block_name in blockR_dict:
-        blockRmin[block_name] = min(blockR_dict[block_name])
-    # blockRmin_list = list(blockRmin.values())
-    # blockRmin_list25 = np.percentile(np.array(blockRmin_list), 25)
     blockR_dictfilter = {}
-    if blockR25_listmin >= 0.5:
-        for block_name in blockRmin:
+    for block_name in blockR25:
+        if blockR25[block_name] >= 0.5:
             blockR_dictfilter[block_name] = 0.5
-    elif blockR25_listmin < 0.5:
-        for block_name in blockRmin:
-            if blockRmin[block_name] >= blockR25_listmin and blockRmin[block_name] <= 0.5:
-                blockR_dictfilter[block_name] = blockRmin[block_name]
-            elif blockRmin[block_name] < blockR25_listmin:
-                blockR_dictfilter[block_name] = blockR25_listmin
-            elif blockRmin[block_name] > 0.5:
-                blockR_dictfilter[block_name] = 0.5
+        elif blockR25[block_name] < 0.5:
+            blockR_dictfilter[block_name] = blockR25[block_name]
     blockRbed_sp1 = open(sp1blockRbed, 'w')
     blockRbed_sp2 = open(sp2blockRbed, 'w')
     for block_name in block_range_sp1:
@@ -286,12 +271,12 @@ def blockR(inf_anchors, sp1blockRbed, sp2blockRbed, infasta1, infasta2, pnumber,
 
 if __name__ == '__main__':
     inf_anchors = sys.argv[1]
-    sp1 = sys.argv[2]
-    sp2 = sys.argv[3]
+    sp1blockRbed = sys.argv[2]
+    sp2blockRbed = sys.argv[3]
     infasta1 = sys.argv[4]
     infasta2 = sys.argv[5]
     pnumber = sys.argv[6]
     inbed_sp1 = sys.argv[7]
     inbed_sp2 = sys.argv[8]
     outR = sys.argv[9]
-    blockR(inf_anchors, sp1, sp2, infasta1, infasta2, pnumber, inbed_sp1, inbed_sp2, outR)
+    blockR(inf_anchors, sp1blockRbed, sp2blockRbed, infasta1, infasta2, pnumber, inbed_sp1, inbed_sp2, outR)
