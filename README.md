@@ -23,7 +23,7 @@ conda install -c conda-forge -c bioconda syngap
 cd ~/code  # or any directory of your choice
 git clone git://github.com/yanyew/SynGAP.git
 cd ~/code/SynGAP
-conda env create -f SynGAP.environment.yaml
+conda env create -f SynGAP.environment.yaml -c conda-forge -c bioconda
 export PATH=~/code/SynGAP:$PATH
 ```
 ## Docker image
