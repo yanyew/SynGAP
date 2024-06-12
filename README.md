@@ -1,4 +1,6 @@
 # SynGAP
+![SyGAP_logo](https://github.com/yanyew/SynGAP/assets/90335707/becdec2d-b1ea-4119-a3ea-6a1be7ccb6ba)
+
 A toolkit for comparative genomics and transcriptomics research of related species.
 
 **SynGAP** (**Synteny-based Gene Structure Annotation Polisher**) is a command-line software written in Python3, suitable for Linux operating systems. And we provides the image that can be used for other operating systems such as MacOS and Windows.
@@ -8,7 +10,7 @@ It supports two main workflows:
 
 Find source codes and documentation at [https://github.com/yanyew/SynGAP](https://github.com/yanyew/SynGAP)<br />
 Find detailed documentation at [https://www.yuque.com/yanyew/gc786d](https://www.yuque.com/yanyew/gc786d)<br />
-For any question about SynGAP, please contact 360875601w@gamil.com<br />
+For any question about SynGAP, please contact 360875601w@gmail.com<br />
 If you use SynGAP, please cite:
 
 # Installation
@@ -21,7 +23,7 @@ conda install -c conda-forge -c bioconda syngap
 cd ~/code  # or any directory of your choice
 git clone git://github.com/yanyew/SynGAP.git
 cd ~/code/SynGAP
-conda env create -f SynGAP.environment.yaml
+conda env create -f SynGAP.environment.yaml -c conda-forge -c bioconda
 export PATH=~/code/SynGAP:$PATH
 ```
 ## Docker image
