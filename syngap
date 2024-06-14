@@ -13,11 +13,11 @@ from initdb import initdb
 
 
 def main():
-    __description__ = ('Synteny-based Genome Annotation Polisher (SynGAP)')
+    __description__ = ('Synteny-based Gene structure Annotation Polisher (SynGAP)')
     __author__ = 'Fengqi Wu'
     parser = argparse.ArgumentParser(
         prog='syngap',
-        description='Synteny-based Genome Annotation Polisher (SynGAP)  https://github.com/yanyew/SynGAP')
+        description='Synteny-based Gene structure Annotation Polisher (SynGAP)  https://github.com/yanyew/SynGAP')
     subparsers = parser.add_subparsers()
 
     parser_init = subparsers.add_parser('initdb', help='Import the pre-downloaded compressed file of masterdb for SynGAP master')

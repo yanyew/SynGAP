@@ -223,6 +223,7 @@ def SynGAPcustom(sp1, sp2, annoType1, annoKey1, annoparentKey1, annoType2, annoK
     sp1id_nonfunction = SynGAP_workspace_Dir + '/function/' + str(sp1) + '.nonfunction.id'
     sp2id_function = SynGAP_workspace_Dir + '/function/' + str(sp2) + '.function.id'
     sp2id_nonfunctionn = SynGAP_workspace_Dir + '/function/' + str(sp2) + '.nonfunction.id'
+    os.system('tar -zxvf ' + str(script_dir) + '/bin/SwissProt.tar.gz -C' + str(script_dir) + '/bin')
     os.system('diamond blastp --db ' + str(script_dir) + '/bin/SwissProt/uniprot_sprot.fasta' + ' --query ' +
               sp1pripep + ' -e 1e-8 --outfmt 6 --max-target-seqs 5 --threads ' + str(threads) +
               ' --quiet --out ' + sp1func)
