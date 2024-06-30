@@ -8,7 +8,12 @@ import tarfile
 
 def initdb(args):
     script_dir, filename = os.path.split(os.path.abspath(sys.argv[0]))
+    if str(args.sp) != 'plant' and str(args.sp) != 'animal':
+        print('The species type of masterdb should be plant or animal\n')
+        sys.exit()
     masterdb_dir = str(script_dir) + '/bin/masterdb/' + str(args.sp)
+    if not os.path.exists(masterdb_dir):
+        os.system('mkdir ' + masterdb_dir)
     tar = tarfile.open(str(args.file), "r:gz")
     gz_file_list = tar.getnames()
     masterdb_dir_file_list = [f for f in os.listdir(masterdb_dir) if os.path.isfile(os.path.join(masterdb_dir, f))]
@@ -25,7 +30,7 @@ def initdb(args):
                 else:
                     tar.extractall(masterdb_dir)
                     tar.close()
-                    print('Imported masterbd done! You can check the species list in \033[0;35m' + splist + '\033[0m')
+                    print('Import masterbd done! You can check the species list in \033[0;35m' + splist + '\033[0m')
                     sys.exit()
             print("The masterdb has been imported.\n"
                   "Skip `\033[0;35msyngap initdb\033[0m`.")
