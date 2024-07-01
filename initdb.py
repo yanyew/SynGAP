@@ -13,10 +13,11 @@ def initdb(args):
         sys.exit()
     masterdb_dir = str(script_dir) + '/bin/masterdb/' + str(args.sp)
     if not os.path.exists(masterdb_dir):
-        os.system('mkdir ' + masterdb_dir)
+        os.makedirs(masterdb_dir, exist_ok=True)
     tar = tarfile.open(str(args.file), "r:gz")
     gz_file_list = tar.getnames()
-    masterdb_dir_file_list = [f for f in os.listdir(masterdb_dir) if os.path.isfile(os.path.join(masterdb_dir, f))]
+    masterdb_dir_file_list = \
+        [f for f in os.listdir(masterdb_dir) if os.path.isfile(os.path.join(masterdb_dir, f))]
     splist = masterdb_dir + '/species.list'
     global sp_list
     if os.path.exists(splist):

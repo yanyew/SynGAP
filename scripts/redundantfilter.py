@@ -80,28 +80,35 @@ def redundantfilter(modified_gff, modified_bed, filtered_gff):
     n = 0
     block = []
     overlap_blocks = {}
+    blocks_region = {}
     retain_genes = []
     print('[\033[0;36mINFO\033[0m] Filtering ...')
     for geneid in geneid_list:
         p = geneid_list.index(geneid)
         if p == 0:
+            print(str(n))
             block.append(geneid)
             overlap_blocks[n] = block
+            blocks_region[n] = [gene_chr[geneid], gene_start[geneid], gene_end[geneid]]
         elif p > 0:
-            geneid_p = geneid_list[p - 1]
-            if gene_chr[geneid] == gene_chr[geneid_p]:
-                if int(gene_start[geneid]) < int(gene_end[geneid_p]):
+            if blocks_region[n][0] == gene_chr[geneid]:
+                if int(gene_start[geneid]) < int(blocks_region[n][2]):
                     block.append(geneid)
-                elif int(gene_start[geneid]) >= int(gene_end[geneid_p]):
+                    start = min(int(gene_start[geneid]), int(blocks_region[n][1]))
+                    end = max(int(gene_end[geneid]), int(blocks_region[n][2]))
+                    blocks_region[n] = [gene_chr[geneid], start, end]
+                elif int(gene_start[geneid]) >= int(blocks_region[n][2]):
                     block = []
                     block.append(geneid)
                     n += 1
                     overlap_blocks[n] = block
-            elif gene_chr[geneid] != gene_chr[geneid_p]:
+                    blocks_region[n] = [gene_chr[geneid], gene_start[geneid], gene_end[geneid]]
+            elif blocks_region[n][0] != gene_chr[geneid]:
                 block = []
                 block.append(geneid)
                 n += 1
                 overlap_blocks[n] = block
+                blocks_region[n] = [gene_chr[geneid], gene_start[geneid], gene_end[geneid]]
     for block_number in overlap_blocks:
         b = overlap_blocks[block_number]
         if len(b) > 1:
