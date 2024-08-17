@@ -5,7 +5,7 @@ A toolkit for comparative genomics and transcriptomics research of related speci
 
 **SynGAP** (**Synteny-based Gene Structure Annotation Polisher**) is a command-line software written in Python3, suitable for Linux operating systems. And we provides the image that can be used for other operating systems such as MacOS and Windows.
 It supports two main workflows:
-(1) **genome annotations polishment for related species** (_dual_, _master_, _triple_, and _custom_);
+(1) **genome annotations polishing for related species** (_dual_, _master_, _triple_, and _custom_);
 (2) **gene differential expression analysis of related species** (_genepair_, _evi_, and _eviplot_).
 
 Find source codes and documentation at [https://github.com/yanyew/SynGAP](https://github.com/yanyew/SynGAP)<br />
@@ -59,7 +59,7 @@ ortools-python
 ftpretty
 ```
 # Usage
-## genome annotations polishment
+## genome annotations polishing
 ### _dual_
 SynGAP _dual_ was a module designed for the mutual gene structural annotations correction of two species, which takes the genome sequences and genome annotations of the correction objects as input.
 For example:
@@ -118,7 +118,7 @@ syngap master \
 --sp1=Bra
 ```
 ### _triple_
-As for the polishment of three species in combination, you can choose SynGAP _triple._
+As for the polishing of three species in combination, you can choose SynGAP _triple._
 ```
 syngap triple \
 --sp1fa=Athaliana_167_TAIR9.fa \
@@ -132,7 +132,7 @@ syngap triple \
 --sp3=Bra
 ```
 ### _custom_
-If you only focus on the annotation polishment in specific synteny block, or prefer to use synteny results from other software rather than jcvi, you can offer the _*.anchors_ file that contains the block  and use SynGAP _custom_.
+If you only focus on the annotation polishing in specific synteny block, or prefer to use synteny results from other software rather than jcvi, you can offer the _*.anchors_ file that contains the block  and use SynGAP _custom_.
 ```
 syngap custom \
 --sp1fa=Athaliana_167_TAIR9.fa \
