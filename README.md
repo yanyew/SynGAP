@@ -28,8 +28,8 @@ export PATH=~/code/SynGAP:$PATH
 ```
 ## Docker image
 ```
-docker pull yanyew/syngap:1.2.3
-docker run -it yanyew/syngap:1.2.3
+docker pull yanyew/syngap:1.2.5
+docker run -it yanyew/syngap:1.2.5
 conda activate syngap # activate the conda environment for SynGAP
 ```
 # Dependence
