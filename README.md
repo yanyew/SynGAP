@@ -11,7 +11,8 @@ It supports two main workflows:
 Find source codes and documentation at [https://github.com/yanyew/SynGAP](https://github.com/yanyew/SynGAP)<br />
 Find detailed documentation at [https://www.yuque.com/yanyew/gc786d](https://www.yuque.com/yanyew/gc786d)<br />
 For any question about SynGAP, please contact 360875601w@gmail.com<br />
-If you use SynGAP, please cite:
+If you use SynGAP, please cite: Wu F, Mai Y, Chen C, et al. SynGAP: a synteny-based toolkit for gene structure annotation polishing[J]. Genome Biology, 2024, 25(1): 218.
+https://doi.org/10.1186/s13059-024-03359-8
 
 # Installation
 ## conda (recommended)
